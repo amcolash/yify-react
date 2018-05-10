@@ -1,10 +1,18 @@
-import React from 'react';
+import React, { Component } from 'react';
+import './Movie.css';
 
-export default ({movie}) =>
-    <div>
-        <img src={movie.img} alt={movie.title}/>
-        <br/>
-        <span>{movie.title}</span>
-        <br/>
-        <a href={movie.url}>url</a>
-    </div>
+class Movie extends Component {
+    render() {
+        const movie = this.props.movie;
+
+        return (
+            <div className="movie">
+                <img src={movie.medium_cover_image} alt={movie.title} />
+                <br />
+                <a href={movie.url}>{movie.title}</a>
+            </div>
+        );
+    }
+}
+
+export default Movie;
