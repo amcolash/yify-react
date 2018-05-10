@@ -52,7 +52,7 @@ class MovieList extends Component {
             isSearching: true
         });
 
-        const limit = 10;
+        const limit = 20;
         const query = this.state.search;
         const page = this.state.page;
         const params = 'limit=' + limit + '&page=' + page + (query.length > 0 ? '&sort_by=title&query_term=' + query : '');
@@ -92,6 +92,29 @@ class MovieList extends Component {
         }, error => {
             console.error(error);
         });
+    }
+
+    openLink = (infoHash) => {
+        const { torrents } = this.state;
+
+        for (var i = 0; i < torrents.length; i++) {
+            const torrent = torrents[i];
+            if (torrent.infoHash === infoHash) {
+                var largestSize = 0;
+                var largestIndex = 0;
+
+                for (var j = 0; j < torrent.files.length; j++) {
+                    const file = torrent.files[j];
+                    if (file.length > largestSize) {
+                        largestIndex = j;
+                        largestSize = file.length;
+                    }
+                }
+
+                window.open(this.server + torrent.files[largestIndex].link);
+                return;
+            }
+        }
     }
 
     onOpenModal = (movie) => {
@@ -137,12 +160,14 @@ class MovieList extends Component {
                             updateTorrents={this.updateTorrents}
                             cancelTorrent={this.cancelTorrent}
                             downloadTorrent={this.downloadTorrent}
+                            openLink={this.openLink}
                         />
                     </Modal>
             
                     <TorrentList
                         torrents={torrents}
                         cancelTorrent={this.cancelTorrent}
+                        openLink={this.openLink}
                     />
 
                     <div className="search">

@@ -34,32 +34,8 @@ class Details extends Component {
         return null;
     }
 
-    openLink(infoHash) {
-        const { torrents, server } = this.props;
-
-        for (var i = 0; i < torrents.length; i++) {
-            const torrent = torrents[i];
-            if (torrent.infoHash === infoHash) {
-                var largestSize = 0;
-                var largestIndex = 0;
-                
-                for (var j = 0; j < torrent.files.length; j++) {
-                    const file = torrent.files[j];
-                    if (file.length > largestSize) {
-                        largestIndex = j;
-                        largestSize = file.length;
-                    }
-                }
-
-                window.open(server + torrent.files[largestIndex].link);
-                return;
-            }
-        }
-
-    }
-
     render() {
-        const { movie, downloadTorrent, cancelTorrent } = this.props;
+        const { movie, downloadTorrent, cancelTorrent, openLink } = this.props;
 
         var versions = this.getVersions(movie);
         var hasPeers = false;
@@ -72,7 +48,11 @@ class Details extends Component {
             <div className="container">
                 <img src={movie.medium_cover_image} alt={movie.title}/>
                 <div className="data">
-                    <h3>{movie.title} ({movie.year}) <span className={hasPeers ? "status green" : "status red"}>●</span></h3>
+                    <h3>
+                        <span className={hasPeers ? "status green" : "status red"}>●</span>
+                        {movie.title} ({movie.year})
+                        <div className="mpaa-rating">{movie.mpa_rating ? movie.mpa_rating : "NR"}</div>
+                    </h3>
                     <p>{movie.summary}</p>
                     <span>{JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')}</span>
                     <br/>
@@ -83,22 +63,20 @@ class Details extends Component {
                             <div className="version" key={version.url}>
                             <b>{version.quality}</b>
                             {this.getProgress(version.infoHash) ? null : 
-                                <button onClick={() => downloadTorrent(version)}>DL</button>
+                                <button onClick={() => downloadTorrent(version)}>⭳</button>
                             }
                             <span> (Peers: {version.peers}, Ratio: {version.ratio})</span>
                             <br/>
                             {this.getProgress(version.infoHash) ? (
                                 <Fragment>
                                     <progress value={this.getProgress(version.infoHash)} max="100"></progress>
+                                    <button onClick={() => openLink(version.infoHash)}>►</button>
                                     <button onClick={() => cancelTorrent(version.infoHash)}>X</button>
-                                    <button onClick={() => this.openLink(version.infoHash)}>►</button>
                                 </Fragment>
                             ) : null}
                         </div>
                         ) : null
                     ))}
-
-                    <div className="mpaa-rating">{movie.mpa_rating ? movie.mpa_rating : "NR"}</div>
                 </div>
             </div>
         );
