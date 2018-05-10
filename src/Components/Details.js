@@ -34,6 +34,30 @@ class Details extends Component {
         return null;
     }
 
+    openLink(infoHash) {
+        const { torrents, server } = this.props;
+
+        for (var i = 0; i < torrents.length; i++) {
+            const torrent = torrents[i];
+            if (torrent.infoHash === infoHash) {
+                var largestSize = 0;
+                var largestIndex = 0;
+                
+                for (var j = 0; j < torrent.files.length; j++) {
+                    const file = torrent.files[j];
+                    if (file.length > largestSize) {
+                        largestIndex = j;
+                        largestSize = file.length;
+                    }
+                }
+
+                window.open(server + torrent.files[largestIndex].link);
+                return;
+            }
+        }
+
+    }
+
     render() {
         const { movie, downloadTorrent, cancelTorrent } = this.props;
 
@@ -57,16 +81,19 @@ class Details extends Component {
                     {versions.map(version => (
                         version.peers > 0 ? (
                             <div className="version" key={version.url}>
-                            <a href={version.url}><b>{version.quality} ►</b></a>
+                            <b>{version.quality}</b>
+                            {this.getProgress(version.infoHash) ? null : 
+                                <button onClick={() => downloadTorrent(version)}>DL</button>
+                            }
+                            <span> (Peers: {version.peers}, Ratio: {version.ratio})</span>
+                            <br/>
                             {this.getProgress(version.infoHash) ? (
                                 <Fragment>
                                     <progress value={this.getProgress(version.infoHash)} max="100"></progress>
                                     <button onClick={() => cancelTorrent(version.infoHash)}>X</button>
+                                    <button onClick={() => this.openLink(version.infoHash)}>►</button>
                                 </Fragment>
-                            ) : (
-                                <button onClick={() => downloadTorrent(version)}>DL</button>
-                            )}
-                            <span> (Peers: {version.peers}, Ratio: {version.ratio})</span>
+                            ) : null}
                         </div>
                         ) : null
                     ))}

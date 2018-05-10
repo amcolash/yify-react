@@ -36,11 +36,10 @@ class MovieList extends Component {
 
         // First update, then schedule polling
         this.updateTorrents();
-        // setInterval(() => this.updateTorrents(), 5000); // Poll torrents every 5 seconds (might be overkill)
+        setInterval(() => this.updateTorrents(), 5000); // Poll torrents every 5 seconds (might be overkill)
     }
 
     updateTorrents() {
-        console.log("update")
         axios.get(this.server + '/torrents').then(response => {
             this.setState({ torrents: response.data });
         }, error => {
@@ -80,7 +79,6 @@ class MovieList extends Component {
     }
 
     cancelTorrent = (infoHash) => {
-        console.log("cancel: " + infoHash)
         axios.delete(this.server + '/torrents/' + infoHash).then(response => {
             this.updateTorrents();
         }, error => {
@@ -89,7 +87,6 @@ class MovieList extends Component {
     }
 
     downloadTorrent = (version) => {
-        console.log("download")
         axios.post(this.server + '/torrents', { link: version.url }).then(response => {
             this.updateTorrents();
         }, error => {
