@@ -1,8 +1,10 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
+import { DebounceInput } from 'react-debounce-input';
 
 import './MovieList.css';
 import Movie from './Movie';
+import Spinner from './Spinner';
 
 class MovieList extends Component {
 
@@ -12,7 +14,9 @@ class MovieList extends Component {
         this.state = {
             error: null,
             isLoaded: false,
-            movies: []
+            isSearching: false,
+            movies: [],
+            search: ''
         }
     }
 
@@ -21,21 +25,27 @@ class MovieList extends Component {
     }
 
     updateData() {
-        const query = '';
+        this.setState({
+            isSearching: true
+        });
+
+        const query = this.state.search;
         const page = 1;
-        const params = 'limit=50&page=' + page + (query.length > 0 ? '&query_term=' + query : '');
+        const params = 'limit=50&page=' + page + (query.length > 0 ? '&sort_by=title&query_term=' + query : '');
         const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
 
         axios.get(ENDPOINT).then(response => {
             const data = response.data.data;
             this.setState({
                 movies: data.movies,
-                isLoaded: true
+                isLoaded: true,
+                isSearching: false
             });
         }, error => {
             this.setState({
                 error: error,
-                isLoaded: true
+                isLoaded: true,
+                isSearching: false
             });
         });
     }
@@ -53,17 +63,25 @@ class MovieList extends Component {
                     <div className="search">
                         <label>
                             Search
-                            <input type="text"/>
+                            <DebounceInput
+                                minLength={2}
+                                debounceTimeout={1000}
+                                onChange={event => this.setState({ search: event.target.value }, () => this.updateData() )}
+                            />
                         </label>
+
+                        <Spinner visible={this.state.isSearching} />
                     </div>
 
                     <div className="movie-list">
-                        {movies.map(movie => (
+                        {(movies && movies.length > 0) ? movies.map(movie => (
                             <Movie
                                 key={movie.id}
                                 movie={movie}
                             />
-                        ))}
+                        )) :
+                            <div className="message">No Results</div>
+                        }
                     </div>
                 </Fragment>
             );
