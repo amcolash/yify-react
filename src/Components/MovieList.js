@@ -20,6 +20,8 @@ class MovieList extends Component {
             isSearching: false,
             movies: [],
             search: '',
+            page: 1,
+            totalPages: 1,
             modal: false,
             movie: {}
         }
@@ -36,16 +38,20 @@ class MovieList extends Component {
 
         const limit = 10;
         const query = this.state.search;
-        const page = 1;
+        const page = this.state.page;
         const params = 'limit=' + limit + '&page=' + page + (query.length > 0 ? '&sort_by=title&query_term=' + query : '');
         const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
 
         axios.get(ENDPOINT).then(response => {
             const data = response.data.data;
+            const total = data.movie_count;
+            const totalPages = Math.ceil(total / limit);
+
             this.setState({
                 movies: data.movies,
                 isLoaded: true,
-                isSearching: false
+                isSearching: false,
+                totalPages: totalPages
             });
         }, error => {
             this.setState({
@@ -64,8 +70,20 @@ class MovieList extends Component {
         this.setState({ modal: false });
     };
 
+    changeSearch(newValue) {
+        this.setState({ search: newValue }, () => this.updateData());
+    }
+
+    changePage(direction) {
+        const { page, totalPages } = this.state;
+        var newPage = direction + page;
+        if (newPage < 1 || newPage > totalPages) return;
+
+        this.setState({ page: newPage }, () => this.updateData());
+    }
+
     render() {
-        const { error, isLoaded, movies, modal, movie } = this.state;
+        const { error, isLoaded, movies, modal, movie, page, totalPages } = this.state;
 
         if (error) {
             return <div className="message">Error: {error.message}</div>;
@@ -87,25 +105,43 @@ class MovieList extends Component {
                                 value={this.state.search}
                                 minLength={2}
                                 debounceTimeout={1000}
-                                onChange={event => this.setState({ search: event.target.value }, () => this.updateData() )}
+                                onChange={event => this.changeSearch(event.target.value) }
                             />
-                            <button onClick={() => this.setState({ search: '' }, () => this.updateData())}>✖</button>
+                            <button onClick={() => this.changeSearch('') }>✖</button>
                         </label>
 
                         <Spinner visible={this.state.isSearching} />
                     </div>
 
                     <div className="movie-list">
-                        {(movies && movies.length > 0) ? movies.map(movie => (
-                            <Movie
-                                key={movie.id}
-                                movie={movie}
-                                click={this.onOpenModal}
-                            />
-                        )) :
+                        {(movies && movies.length > 0) ? (
+                            movies.map(movie => (
+                                <Movie
+                                    key={movie.id}
+                                    movie={movie}
+                                    click={this.onOpenModal}
+                                />
+                            ))
+                        ) :
                             <div className="message">No Results</div>
                         }
                     </div>
+
+                    {(movies && movies.length > 0) ? (
+                        <div className="pager">
+                            {page > 1 ? (
+                                <span className="arrow" onClick={() => this.changePage(-1)}>⇦</span>
+                            ) : null}
+                            
+                            <span>{page}</span>
+                            
+                            {page < totalPages ? (
+                                <span className="arrow" onClick={() => this.changePage(1)}>⇨</span>
+                            ) : null}
+
+                            <Spinner visible={this.state.isSearching} />
+                        </div>
+                    ) : null}
                 </Fragment>
             );
         }
