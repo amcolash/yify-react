@@ -1,4 +1,17 @@
 .movie {
     display: inline-block;
+    vertical-align: top;
+    text-align: center;
+    max-width: 230px;
     padding: 10px;
+}
+
+.movie a {
+    color: white;
+    text-decoration: none;
+}
+
+.movie img {
+    border: 2px solid white;
+    border-radius: 3px;
 }

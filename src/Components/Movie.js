@@ -7,9 +7,11 @@ class Movie extends Component {
 
         return (
             <div className="movie">
-                <img src={movie.medium_cover_image} alt={movie.title} />
-                <br />
-                <a href={movie.url}>{movie.title}</a>
+                <a href={movie.url}>
+                    <img src={movie.medium_cover_image} alt={movie.title} />
+                    <br/>
+                    {movie.title}
+                </a>
             </div>
         );
     }

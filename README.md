@@ -1,5 +1,7 @@
 # yify-react
-A simple react app that shows info from the yify api
+A simple react app that shows info from the yify api.
+
+Please know that this was a test of using real life apis. Don't pirate movies.
 
 -------------------------------------------------
 

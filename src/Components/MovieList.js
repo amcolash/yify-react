@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 
+import './MovieList.css';
 import Movie from './Movie';
 
 class MovieList extends Component {
@@ -16,7 +17,14 @@ class MovieList extends Component {
     }
 
     componentDidMount() {
-        const ENDPOINT = 'https://yts.am/api/v2/list_movies.json';
+        this.updateData();
+    }
+
+    updateData() {
+        const query = '';
+        const page = 1;
+        const params = 'limit=50&page=' + page + (query.length > 0 ? '&query_term=' + query : '');
+        const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
 
         axios.get(ENDPOINT).then(response => {
             const data = response.data.data;
@@ -36,19 +44,28 @@ class MovieList extends Component {
         const { error, isLoaded, movies } = this.state;
 
         if (error) {
-            return <div>Error: {error.message}</div>;
+            return <div className="message">Error: {error.message}</div>;
         } else if (!isLoaded) {
-            return <div>Loading...</div>;
+            return <div className="message">Loading...</div>;
         } else {
             return (
-                <div className="movie-list">
-                    {movies.map(movie => (
-                        <Movie
-                            key={movie.id}
-                            movie={movie}
-                        />
-                    ))}
-                </div>
+                <Fragment>
+                    <div className="search">
+                        <label>
+                            Search
+                            <input type="text"/>
+                        </label>
+                    </div>
+
+                    <div className="movie-list">
+                        {movies.map(movie => (
+                            <Movie
+                                key={movie.id}
+                                movie={movie}
+                            />
+                        ))}
+                    </div>
+                </Fragment>
             );
         }
     }
