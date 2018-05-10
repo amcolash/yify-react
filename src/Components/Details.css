@@ -1,0 +1,51 @@
+.container {
+    margin-top: 24px;
+}
+
+.data {
+    color: #555;
+    display: inline-block;
+    vertical-align: top;
+    max-width: 65%;
+    padding-left: 1em;
+}
+
+a {
+    color: #555;
+    text-decoration: none;
+}
+
+h3 {
+    margin-top: 0;
+    margin-left: 0.5em;
+}
+
+h4 {
+    margin: 0;
+}
+
+.mpaa-rating {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    padding: 0.1em;
+    border-radius: 0;
+    font-family: Times New Roman;
+    font-weight: bold;
+    font-size: 1.5em;
+    border: 2px solid black;
+}
+
+.status {
+    font-size: 1.5em;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+}
+
+.green {
+    color: greenyellow;
+}
+
+.red {
+    color: red;
+}

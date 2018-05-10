@@ -3,7 +3,11 @@
     vertical-align: top;
     text-align: center;
     max-width: 230px;
-    padding: 10px;
+    margin: 10px;
+}
+
+.movie:hover {
+    cursor: pointer;
 }
 
 .movie a {

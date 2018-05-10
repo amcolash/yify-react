@@ -1,10 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import { DebounceInput } from 'react-debounce-input';
+import Modal from 'react-responsive-modal';
+
 
 import './MovieList.css';
 import Movie from './Movie';
 import Spinner from './Spinner';
+import Details from './Details';
 
 class MovieList extends Component {
 
@@ -16,7 +19,9 @@ class MovieList extends Component {
             isLoaded: false,
             isSearching: false,
             movies: [],
-            search: ''
+            search: '',
+            modal: false,
+            movie: {}
         }
     }
 
@@ -29,9 +34,10 @@ class MovieList extends Component {
             isSearching: true
         });
 
+        const limit = 10;
         const query = this.state.search;
         const page = 1;
-        const params = 'limit=50&page=' + page + (query.length > 0 ? '&sort_by=title&query_term=' + query : '');
+        const params = 'limit=' + limit + '&page=' + page + (query.length > 0 ? '&sort_by=title&query_term=' + query : '');
         const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
 
         axios.get(ENDPOINT).then(response => {
@@ -50,8 +56,16 @@ class MovieList extends Component {
         });
     }
 
+    onOpenModal = (movie) => {
+        this.setState({ movie: movie, modal: true });
+    };
+
+    onCloseModal = () => {
+        this.setState({ modal: false });
+    };
+
     render() {
-        const { error, isLoaded, movies } = this.state;
+        const { error, isLoaded, movies, modal, movie } = this.state;
 
         if (error) {
             return <div className="message">Error: {error.message}</div>;
@@ -60,14 +74,22 @@ class MovieList extends Component {
         } else {
             return (
                 <Fragment>
+                    <Modal open={modal} onClose={this.onCloseModal} center>
+                        <Details
+                            movie={movie}
+                        />
+                    </Modal>
+            
                     <div className="search">
                         <label>
                             Search
                             <DebounceInput
+                                value={this.state.search}
                                 minLength={2}
                                 debounceTimeout={1000}
                                 onChange={event => this.setState({ search: event.target.value }, () => this.updateData() )}
                             />
+                            <button onClick={() => this.setState({ search: '' }, () => this.updateData())}>✖</button>
                         </label>
 
                         <Spinner visible={this.state.isSearching} />
@@ -78,6 +100,7 @@ class MovieList extends Component {
                             <Movie
                                 key={movie.id}
                                 movie={movie}
+                                click={this.onOpenModal}
                             />
                         )) :
                             <div className="message">No Results</div>
