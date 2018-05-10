@@ -8,8 +8,11 @@ import './MovieList.css';
 import Movie from './Movie';
 import Spinner from './Spinner';
 import Details from './Details';
+import TorrentList from './TorrentList';
 
 class MovieList extends Component {
+
+    server = "http://localhost:9000";
 
     constructor(props) {
         super(props);
@@ -23,12 +26,26 @@ class MovieList extends Component {
             page: 1,
             totalPages: 1,
             modal: false,
-            movie: {}
+            movie: {},
+            torrents: []
         }
     }
 
     componentDidMount() {
         this.updateData();
+
+        // First update, then schedule polling
+        this.updateTorrents();
+        // setInterval(() => this.updateTorrents(), 5000); // Poll torrents every 5 seconds (might be overkill)
+    }
+
+    updateTorrents() {
+        console.log("update")
+        axios.get(this.server + '/torrents').then(response => {
+            this.setState({ torrents: response.data });
+        }, error => {
+            console.error(error);
+        });
     }
 
     updateData() {
@@ -57,8 +74,26 @@ class MovieList extends Component {
             this.setState({
                 error: error,
                 isLoaded: true,
-                isSearching: false
+                isSearching: false,
             });
+        });
+    }
+
+    cancelTorrent = (infoHash) => {
+        console.log("cancel: " + infoHash)
+        axios.delete(this.server + '/torrents/' + infoHash).then(response => {
+            this.updateTorrents();
+        }, error => {
+            console.error(error);
+        });
+    }
+
+    downloadTorrent = (version) => {
+        console.log("download")
+        axios.post(this.server + '/torrents', { link: version.url }).then(response => {
+            this.updateTorrents();
+        }, error => {
+            console.error(error);
         });
     }
 
@@ -71,7 +106,7 @@ class MovieList extends Component {
     };
 
     changeSearch(newValue) {
-        this.setState({ search: newValue }, () => this.updateData());
+        this.setState({ search: newValue, page: 1 }, () => this.updateData());
     }
 
     changePage(direction) {
@@ -83,21 +118,36 @@ class MovieList extends Component {
     }
 
     render() {
-        const { error, isLoaded, movies, modal, movie, page, totalPages } = this.state;
+        const { error, isLoaded, movies, modal, movie, page, totalPages, torrents } = this.state;
 
         if (error) {
             return <div className="message">Error: {error.message}</div>;
         } else if (!isLoaded) {
-            return <div className="message">Loading...</div>;
+            return (
+            <div className="message">
+                <span>Loading...</span>
+                <Spinner visible={true}/>
+            </div>
+            );
         } else {
             return (
                 <Fragment>
                     <Modal open={modal} onClose={this.onCloseModal} center>
                         <Details
                             movie={movie}
+                            server={this.server}
+                            torrents={torrents}
+                            updateTorrents={this.updateTorrents}
+                            cancelTorrent={this.cancelTorrent}
+                            downloadTorrent={this.downloadTorrent}
                         />
                     </Modal>
             
+                    <TorrentList
+                        torrents={torrents}
+                        cancelTorrent={this.cancelTorrent}
+                    />
+
                     <div className="search">
                         <label>
                             Search

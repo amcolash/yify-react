@@ -1,22 +1,48 @@
-import React, { Component, } from 'react';
+import React, { Component, Fragment } from 'react';
+
 import './Details.css';
 
 class Details extends Component {
-    render() {
-        const movie = this.props.movie;
 
-        var hasPeers = false;
+    getVersions(movie) {
         var versions = [];
-        for (var i = 0; i < movie.torrents.length; i++) {
-            var torrent = movie.torrents[i];
-            if (torrent.peers > 0) hasPeers = true;
-            versions[i] = {
-                quality: torrent.quality,
-                peers: torrent.peers.toFixed(0),
-                ratio: (torrent.peers / torrent.seeds).toFixed(3),
-                url: torrent.url
+
+        if (movie) {
+            for (var i = 0; i < movie.torrents.length; i++) {
+                var torrent = movie.torrents[i];
+                versions.push({
+                    quality: torrent.quality,
+                    peers: torrent.peers.toFixed(0),
+                    ratio: (torrent.peers / torrent.seeds).toFixed(3),
+                    url: torrent.url,
+                    infoHash: torrent.hash.toLowerCase(),
+                });
             }
         }
+
+        return versions;
+    }
+
+    getProgress(infoHash) {
+        const { torrents } = this.props;
+
+        for (var i = 0; i < torrents.length; i++) {
+            const torrent = torrents[i];
+            if (torrent.infoHash === infoHash) return torrent.progress[0] + 0.0001;
+        }
+
+        return null;
+    }
+
+    render() {
+        const { movie, downloadTorrent, cancelTorrent } = this.props;
+
+        var versions = this.getVersions(movie);
+        var hasPeers = false;
+        for (var i = 0; i < versions.length; i++) {
+            if (versions[i].peers > 0) hasPeers = true;
+        }
+
 
         return (
             <div className="container">
@@ -32,6 +58,14 @@ class Details extends Component {
                         version.peers > 0 ? (
                             <div className="version" key={version.url}>
                             <a href={version.url}><b>{version.quality} ►</b></a>
+                            {this.getProgress(version.infoHash) ? (
+                                <Fragment>
+                                    <progress value={this.getProgress(version.infoHash)} max="100"></progress>
+                                    <button onClick={() => cancelTorrent(version.infoHash)}>X</button>
+                                </Fragment>
+                            ) : (
+                                <button onClick={() => downloadTorrent(version)}>DL</button>
+                            )}
                             <span> (Peers: {version.peers}, Ratio: {version.ratio})</span>
                         </div>
                         ) : null
