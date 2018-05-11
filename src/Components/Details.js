@@ -39,6 +39,13 @@ class Details extends Component {
         return torrent !== null ? torrent.progress[0] + 0.001 : null;
     }
 
+    convertTime(min) {
+        const hours = Math.floor(min / 60);
+        const minutes = Math.floor(((min / 60) - hours) * 60);
+        
+        return (hours > 0 ? hours + "h " : "") + (minutes > 0 ? minutes + "m" : "");
+    }
+s
     render() {
         const { movie, downloadTorrent, cancelTorrent, openLink } = this.props;
 
@@ -55,9 +62,12 @@ class Details extends Component {
                 <div className="data">
                     <h3>
                         <span className={hasPeers ? "status green" : "status red"}>●</span>
-                        {movie.title} ({movie.year})
-                        <div className="mpaa-rating">{movie.mpa_rating ? movie.mpa_rating : "NR"}</div>
+                        {movie.title}
                     </h3>
+                    <h4>
+                        {movie.year}, {this.convertTime(movie.runtime)}
+                        <div className="mpaa-rating">{movie.mpa_rating ? movie.mpa_rating : "NR"}</div>
+                    </h4>
                     <p>{movie.summary}</p>
                     <span>{JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')}</span>
                     <br/>
