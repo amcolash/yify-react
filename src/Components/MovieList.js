@@ -138,7 +138,7 @@ class MovieList extends Component {
     }
 
     render() {
-        const { error, isLoaded, movies, modal, movie, page, totalPages, torrents } = this.state;
+        const { error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching } = this.state;
 
         if (error) {
             return <div className="message">Error: {error.message}</div>;
@@ -174,7 +174,7 @@ class MovieList extends Component {
                         <label>
                             Search
                             <DebounceInput
-                                value={this.state.search}
+                                value={search}
                                 minLength={2}
                                 debounceTimeout={1000}
                                 onChange={event => this.changeSearch(event.target.value) }
@@ -182,8 +182,12 @@ class MovieList extends Component {
                             <button className="red" onClick={() => this.changeSearch('') }>✖</button>
                         </label>
 
-                        <Spinner visible={this.state.isSearching} />
+                        <Spinner visible={isSearching} />
                     </div>
+
+                    {search.length === 0 ? (
+                        <h2>Recently Uploaded</h2>
+                    ) : null}
 
                     <div className="movie-list">
                         {(movies && movies.length > 0) ? (
@@ -211,7 +215,7 @@ class MovieList extends Component {
                                 <span className="arrow" onClick={() => this.changePage(1)}>⇨</span>
                             ) : null}
 
-                            <Spinner visible={this.state.isSearching} />
+                            <Spinner visible={isSearching} />
                         </div>
                     ) : null}
                 </Fragment>
