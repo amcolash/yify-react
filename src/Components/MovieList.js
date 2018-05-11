@@ -55,7 +55,7 @@ class MovieList extends Component {
         const limit = 20;
         const query = this.state.search;
         const page = this.state.page;
-        const params = 'limit=' + limit + '&page=' + page + (query.length > 0 ? '&sort_by=title&query_term=' + query : '');
+        const params = 'limit=' + limit + '&page=' + page + (query.length > 0 ? '&sort_by=title&order_by=asc&query_term=' + query : '');
         const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
 
         axios.get(ENDPOINT).then(response => {
