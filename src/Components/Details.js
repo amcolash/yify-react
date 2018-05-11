@@ -7,17 +7,17 @@ class Details extends Component {
     getVersions(movie) {
         var versions = [];
 
-        if (movie) {
-            for (var i = 0; i < movie.torrents.length; i++) {
-                var torrent = movie.torrents[i];
-                versions.push({
-                    quality: torrent.quality,
-                    peers: torrent.peers.toFixed(0),
-                    ratio: (torrent.peers / torrent.seeds).toFixed(3),
-                    url: torrent.url,
-                    infoHash: torrent.hash.toLowerCase(),
-                });
-            }
+        for (var i = 0; i < movie.torrents.length; i++) {
+            const torrent = movie.torrents[i];
+            versions.push({
+                quality: torrent.quality,
+                peers: torrent.peers.toFixed(0),
+                seeds: torrent.seeds.toFixed(0),
+                ratio: (torrent.peers / torrent.seeds).toFixed(3),
+                url: torrent.url,
+                infoHash: torrent.hash.toLowerCase(),
+                size: torrent.size
+            });
         }
 
         return versions;
@@ -65,7 +65,7 @@ class Details extends Component {
                             {this.getProgress(version.infoHash) ? null : 
                                 <button onClick={() => downloadTorrent(version)}>⭳</button>
                             }
-                            <span> (Peers: {version.peers}, Ratio: {version.ratio})</span>
+                            <span> {version.size}, (Peers: {version.peers}, Seeds: {version.seeds}, Ratio: {version.ratio})</span>
                             <br/>
                             {this.getProgress(version.infoHash) ? (
                                 <Fragment>
