@@ -29,6 +29,9 @@ class MovieList extends Component {
             movie: {},
             torrents: []
         }
+
+        this.getTorrent = this.getTorrent.bind(this);
+        this.getProgress = this.getProgress.bind(this);
     }
 
     componentDidMount() {
@@ -92,6 +95,39 @@ class MovieList extends Component {
         }, error => {
             console.error(error);
         });
+    }
+
+    getVersions(movie) {
+        var versions = [];
+
+        for (var i = 0; i < movie.torrents.length; i++) {
+            const torrent = movie.torrents[i];
+            versions.push({
+                quality: torrent.quality,
+                peers: torrent.peers.toFixed(0),
+                seeds: torrent.seeds.toFixed(0),
+                ratio: (torrent.peers / torrent.seeds).toFixed(3),
+                url: torrent.url,
+                infoHash: torrent.hash.toLowerCase(),
+                size: torrent.size
+            });
+        }
+
+        return versions;
+    }
+
+    getTorrent(infoHash) {
+        for (var i = 0; i < this.state.torrents.length; i++) {
+            const torrent = this.state.torrents[i];
+            if (torrent.infoHash === infoHash) return torrent;
+        }
+
+        return null;
+    }
+
+    getProgress(infoHash) {
+        const torrent = this.getTorrent(infoHash);
+        return torrent !== null ? torrent.progress[0] + 0.001 : null;
     }
 
     openLink = (infoHash) => {
@@ -161,6 +197,9 @@ class MovieList extends Component {
                             cancelTorrent={this.cancelTorrent}
                             downloadTorrent={this.downloadTorrent}
                             openLink={this.openLink}
+                            getProgress={this.getProgress}
+                            getTorrent={this.getTorrent}
+                            getVersions={this.getVersions}
                         />
                     </Modal>
             
@@ -176,7 +215,7 @@ class MovieList extends Component {
                             <DebounceInput
                                 value={search}
                                 minLength={2}
-                                debounceTimeout={1000}
+                                debounceTimeout={500}
                                 onChange={event => this.changeSearch(event.target.value) }
                             />
                             <button className="red" onClick={() => this.changeSearch('') }>✖</button>
@@ -196,6 +235,11 @@ class MovieList extends Component {
                                     key={movie.id}
                                     movie={movie}
                                     click={this.onOpenModal}
+                                    downloadTorrent={this.downloadTorrent}
+                                    cancelTorrent={this.cancelTorrent}
+                                    torrents={this.torrents}
+                                    getProgress={this.getProgress}
+                                    getVersions={this.getVersions}
                                 />
                             ))
                         ) :
