@@ -252,15 +252,17 @@ class MovieList extends Component {
 
                     {(movies && movies.length > 0) ? (
                         <div className="pager">
-                            {page > 1 ? (
-                                <span className="arrow" onClick={() => this.changePage(-1)}>⇦</span>
-                            ) : null}
-                            
+                            <span
+                                className="arrow"
+                                style={{visibility: page > 1 ? "visible" : "hidden"}}
+                                onClick={() => this.changePage(-1)}
+                            >⇦</span>
                             <span>{page}</span>
-                            
-                            {page < totalPages ? (
-                                <span className="arrow" onClick={() => this.changePage(1)}>⇨</span>
-                            ) : null}
+                            <span
+                                className="arrow"
+                                style={{visiblity: page < totalPages ? "visible" : "hidden"}}
+                                onClick={() => this.changePage(1)}
+                            >⇨</span>
 
                             <Spinner visible={isSearching} />
                         </div>
