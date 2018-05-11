@@ -20,7 +20,7 @@ class Movie extends Component {
                     <div className="quality">
                         {versions.map(version => (
                             <Fragment
-                                key={version.quality}
+                                key={version.infoHash}
                             >
                                 <span>{version.quality}</span>
                                 {version.progress > 0 ? (
