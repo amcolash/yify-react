@@ -179,7 +179,7 @@ class MovieList extends Component {
                                 debounceTimeout={1000}
                                 onChange={event => this.changeSearch(event.target.value) }
                             />
-                            <button onClick={() => this.changeSearch('') }>✖</button>
+                            <button className="red" onClick={() => this.changeSearch('') }>✖</button>
                         </label>
 
                         <Spinner visible={this.state.isSearching} />

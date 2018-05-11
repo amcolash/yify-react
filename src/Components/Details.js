@@ -1,6 +1,7 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 
 import './Details.css';
+import Progress from './Progress';
 
 class Details extends Component {
 
@@ -23,15 +24,19 @@ class Details extends Component {
         return versions;
     }
 
-    getProgress(infoHash) {
+    getTorrent(infoHash) {
         const { torrents } = this.props;
-
         for (var i = 0; i < torrents.length; i++) {
             const torrent = torrents[i];
-            if (torrent.infoHash === infoHash) return torrent.progress[0] + 0.0001;
+            if (torrent.infoHash === infoHash) return torrent;
         }
 
         return null;
+    }
+
+    getProgress(infoHash) {
+        const torrent = this.getTorrent(infoHash);
+        return torrent !== null ? torrent.progress[0] + 0.001 : null;
     }
 
     render() {
@@ -56,23 +61,23 @@ class Details extends Component {
                     <p>{movie.summary}</p>
                     <span>{JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')}</span>
                     <br/>
-                    <span>IMDB Rating: {movie.rating} / 10</span>
+                    <a href={"https://www.imdb.com/title/" + movie.imdb_code} target="_blank">IMDB Rating</a><span>: {movie.rating} / 10</span>
                     <hr/>
                     {versions.map(version => (
                         version.peers > 0 ? (
                             <div className="version" key={version.url}>
                             <b>{version.quality}</b>
-                            {this.getProgress(version.infoHash) ? null : 
-                                <button onClick={() => downloadTorrent(version)}>⭳</button>
-                            }
+                            {this.getProgress(version.infoHash) ? null : (
+                                <button className="orange download" onClick={() => downloadTorrent(version)}>⭳</button>
+                            )}
                             <span> {version.size}, (Peers: {version.peers}, Seeds: {version.seeds}, Ratio: {version.ratio})</span>
                             <br/>
                             {this.getProgress(version.infoHash) ? (
-                                <Fragment>
-                                    <progress value={this.getProgress(version.infoHash)} max="100"></progress>
-                                    <button onClick={() => openLink(version.infoHash)}>►</button>
-                                    <button onClick={() => cancelTorrent(version.infoHash)}>X</button>
-                                </Fragment>
+                                <Progress
+                                    torrent={this.getTorrent(version.infoHash)}
+                                    openLink={openLink}
+                                    cancelTorrent={cancelTorrent}
+                                />
                             ) : null}
                         </div>
                         ) : null

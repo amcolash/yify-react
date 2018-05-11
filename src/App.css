@@ -7,3 +7,25 @@ body {
     color: white;
     text-align: center;
 }
+
+button {
+    background-color: #777;
+    border: none;
+    color: white;
+    padding: 0.1em 0.3em;
+    font-size: 1em;   
+    margin: 0.5em 0.3em;
+}
+
+button:hover {
+    cursor: pointer;
+}
+
+progress {
+    margin: 0 0.5em;
+    filter: grayscale();
+}
+
+.green { color: greenyellow; }
+.red { color: red; }
+.orange { color: orange; }

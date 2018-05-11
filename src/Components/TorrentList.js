@@ -1,4 +1,5 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
+import Progress from './Progress';
 
 class TorrentList extends Component {
     render() {
@@ -6,12 +7,12 @@ class TorrentList extends Component {
 
         return (
             this.props.torrents.map(torrent => (
-                <Fragment key={torrent.name}>
-                    <span>{torrent.name}</span>
-                    <progress value={torrent.progress[0]} max="100"/>
-                    <button onClick={() => openLink(torrent.infoHash)}>►</button>
-                    <button onClick={() => cancelTorrent(torrent.infoHash)}>X</button>
-                </Fragment>
+                <Progress
+                    key={torrent.infoHash}
+                    torrent={torrent}
+                    openLink={openLink}
+                    cancelTorrent={cancelTorrent}
+                />
             ))
         );
     }

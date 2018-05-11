@@ -11,8 +11,7 @@
 }
 
 a {
-    color: #555;
-    text-decoration: none;
+    color: #999;
 }
 
 h3 {
@@ -41,10 +40,6 @@ h4 {
     padding-right: 0.15em;
 }
 
-.green {
-    color: greenyellow;
-}
-
-.red {
-    color: red;
+.download {
+    font-weight: bolder;
 }
