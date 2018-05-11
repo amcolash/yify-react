@@ -12,8 +12,6 @@ import TorrentList from './TorrentList';
 
 class MovieList extends Component {
 
-    server = "http://localhost:9000";
-
     constructor(props) {
         super(props);
 
@@ -32,6 +30,11 @@ class MovieList extends Component {
 
         this.getTorrent = this.getTorrent.bind(this);
         this.getProgress = this.getProgress.bind(this);
+
+        this.server = window.location.hostname + ":9000";
+        if (this.server.indexOf("localhost") !== -1) {
+            this.server = "http://" + this.server;
+        }
     }
 
     componentDidMount() {
