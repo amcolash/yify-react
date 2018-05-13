@@ -53,6 +53,7 @@ s
                                     torrent={getTorrent(version.infoHash)}
                                     openLink={openLink}
                                     cancelTorrent={cancelTorrent}
+                                    fullName={true}
                                 />
                             ) : null}
                         </div>
