@@ -1,4 +1,7 @@
 import React, { Component, Fragment } from 'react';
+import {
+    FaDownload, FaTrash
+} from 'react-icons/lib/fa';
 import './Movie.css';
 
 class Movie extends Component {
@@ -28,13 +31,13 @@ class Movie extends Component {
                                         e.stopPropagation();
                                         e.nativeEvent.stopImmediatePropagation();
                                         cancelTorrent(version.infoHash);
-                                    }}>✖</button>
+                                    }}><FaTrash/></button>
                                 ) : (
                                     <button className="orange download" onClick={(e) => {
                                         e.stopPropagation();
                                         e.nativeEvent.stopImmediatePropagation();
                                         downloadTorrent(version);
-                                    }}>⭳</button>
+                                        }}><FaDownload/></button>
                                 )}
                                 <br/>
                             </Fragment>

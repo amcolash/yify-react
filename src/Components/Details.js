@@ -1,4 +1,7 @@
 import React, { Component } from 'react';
+import {
+    FaDownload, FaCircle
+} from 'react-icons/lib/fa';
 
 import './Details.css';
 import Progress from './Progress';
@@ -16,6 +19,7 @@ s
         const { movie, downloadTorrent, cancelTorrent, openLink, getVersions, getTorrent, getProgress } = this.props;
 
         var versions = getVersions(movie);
+
         var hasPeers = false;
         for (var i = 0; i < versions.length; i++) {
             if (versions[i].peers > 0) hasPeers = true;
@@ -27,7 +31,7 @@ s
                 <img src={movie.medium_cover_image} alt={movie.title}/>
                 <div className="data">
                     <h3>
-                        <span className={hasPeers ? "status green" : "status red"}>●</span>
+                        <span className={hasPeers ? "status green" : "status red"}><FaCircle/></span>
                         {movie.title}
                     </h3>
                     <h4>
@@ -40,11 +44,10 @@ s
                     <a href={"https://www.imdb.com/title/" + movie.imdb_code} target="_blank">IMDB Rating</a><span>: {movie.rating} / 10</span>
                     <hr/>
                     {versions.map(version => (
-                        version.peers > 0 ? (
-                            <div className="version" key={version.url}>
+                        <div className="version" key={version.url}>
                             <b>{version.quality}</b>
                             {getProgress(version.infoHash) ? null : (
-                                <button className="orange download" onClick={() => downloadTorrent(version)}>⭳</button>
+                                <button className="orange download" onClick={() => downloadTorrent(version)}><FaDownload/></button>
                             )}
                             <span> {version.size}, (Peers: {version.peers}, Seeds: {version.seeds}, Ratio: {version.ratio})</span>
                             <br/>
@@ -57,7 +60,6 @@ s
                                 />
                             ) : null}
                         </div>
-                        ) : null
                     ))}
                 </div>
             </div>

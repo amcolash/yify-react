@@ -2,9 +2,13 @@ import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import { DebounceInput } from 'react-debounce-input';
 import Modal from 'react-responsive-modal';
-
+import {
+    FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaClose
+} from 'react-icons/lib/fa';
 
 import './MovieList.css';
+import Genre from '../Genre';
+import Order from '../Order';
 import Movie from './Movie';
 import Spinner from './Spinner';
 import Details from './Details';
@@ -25,7 +29,9 @@ class MovieList extends Component {
             totalPages: 1,
             modal: false,
             movie: {},
-            torrents: []
+            torrents: [],
+            genre: '',
+            order: 'date_added'
         }
 
         this.getTorrent = this.getTorrent.bind(this);
@@ -51,14 +57,18 @@ class MovieList extends Component {
     }
 
     updateData() {
+        const { search, page, genre, order } = this.state;
+
         this.setState({
             isSearching: true
         });
 
         const limit = 20;
-        const query = this.state.search;
-        const page = this.state.page;
-        const params = 'limit=' + limit + '&page=' + page + (query.length > 0 ? '&sort_by=title&order_by=asc&query_term=' + query : '');
+        const direction = order === 'title' ? 'asc' : 'dec';
+        const params = 'limit=' + limit + '&page=' + page +
+            (search.length > 0 ? '&query_term=' + search : '') +
+            '&sort_by=' + order + '&order_by=' + direction +
+            (genre.length > 0 ? '&genre=' + genre : '');
         const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
 
         axios.get(ENDPOINT).then(response => {
@@ -106,7 +116,7 @@ class MovieList extends Component {
                 quality: torrent.quality,
                 peers: torrent.peers.toFixed(0),
                 seeds: torrent.seeds.toFixed(0),
-                ratio: (torrent.peers / torrent.seeds).toFixed(3),
+                ratio: torrent.peers > 0 ? (torrent.seeds / torrent.peers).toFixed(3) : 'dead',
                 url: torrent.url,
                 infoHash: torrent.hash.toLowerCase(),
                 size: torrent.size
@@ -165,16 +175,30 @@ class MovieList extends Component {
         this.setState({ search: newValue, page: 1 }, () => this.updateData());
     }
 
+    changeGenre(newValue) {
+        this.setState({ genre: newValue, page: 1 }, () => this.updateData());
+    }
+
+    changeOrder(newValue) {
+        this.setState({ order: newValue, page: 1 }, () => this.updateData());
+    }
+
+    clearSearch() {
+        this.setState({ search: '', genre: '', order: 'date_added', page: 1 }, () => this.updateData());
+    }
+
     changePage(direction) {
         const { page, totalPages } = this.state;
         var newPage = direction + page;
-        if (newPage < 1 || newPage > totalPages) return;
+        if (page === newPage) return;
+        if (newPage < 1) newPage = 1;
+        if (newPage > totalPages) newPage = totalPages;
 
         this.setState({ page: newPage }, () => this.updateData());
     }
 
     render() {
-        const { error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching } = this.state;
+        const { error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order } = this.state;
 
         if (error) {
             return <div className="message">Error: {error.message}</div>;
@@ -211,14 +235,45 @@ class MovieList extends Component {
 
                     <div className="search">
                         <label>
-                            Search
+                            <span>Search</span>
                             <DebounceInput
                                 value={search}
                                 minLength={2}
                                 debounceTimeout={500}
-                                onChange={event => this.changeSearch(event.target.value) }
+                                onChange={event => this.changeSearch(event.target.value)}
                             />
-                            <button className="red" onClick={() => this.changeSearch('') }>✖</button>
+
+                            <span>Genre</span>
+                            <select
+                                onChange={event => this.changeGenre(event.target.value)}
+                                value={genre}
+                            >
+                                {Genre.map(genre => (
+                                    <option
+                                        key={genre.label}
+                                        value={genre.value}
+                                    >
+                                        {genre.label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <span>Order</span>
+                            <select
+                                onChange={event => this.changeOrder(event.target.value)}
+                                value={order}
+                            >
+                                {Order.map(order => (
+                                    <option
+                                        key={order.label}
+                                        value={order.value}
+                                    >
+                                        {order.label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <button className="red" onClick={() => this.clearSearch() }><FaClose/></button>
                         </label>
 
                         <Spinner visible={isSearching} />
@@ -249,17 +304,27 @@ class MovieList extends Component {
 
                     {(movies && movies.length > 0) ? (
                         <div className="pager">
-                            <span
+                            <FaAngleDoubleLeft
                                 className="arrow"
-                                style={{visibility: page > 1 ? "visible" : "hidden"}}
+                                style={{ visibility: page > 1 ? "visible" : "hidden" }}
+                                onClick={() => this.changePage(-5)}
+                            />
+                            <FaAngleLeft
+                                className="arrow"
+                                style={{ visibility: page > 1 ? "visible" : "hidden" }}
                                 onClick={() => this.changePage(-1)}
-                            >⇦</span>
+                            />
                             <span>{page}</span>
-                            <span
+                            <FaAngleRight
                                 className="arrow"
-                                style={{visiblity: page < totalPages ? "visible" : "hidden"}}
+                                style={{ visibility: page < totalPages ? "visible" : "hidden" }}
                                 onClick={() => this.changePage(1)}
-                            >⇨</span>
+                            />
+                            <FaAngleDoubleRight
+                                className="arrow"
+                                style={{ visibility: page < totalPages ? "visible" : "hidden" }}
+                                onClick={() => this.changePage(5)}
+                            />
 
                             <Spinner visible={isSearching} />
                         </div>

@@ -33,9 +33,8 @@ h4 {
 }
 
 .status {
-    font-size: 1.5em;
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: black;
+    stroke-width: 1px;
+    stroke: black;
     padding-right: 0.15em;
 }
 
