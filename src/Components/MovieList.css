@@ -11,6 +11,14 @@
     margin: auto;
 }
 
+.warning {
+    font-size: 4em;
+}
+
+.warning span {
+    padding-left: 0.25em;
+}
+
 .search {
     padding: 0.75em;
 }

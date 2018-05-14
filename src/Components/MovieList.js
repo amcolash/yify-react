@@ -3,7 +3,7 @@ import axios from 'axios';
 import { DebounceInput } from 'react-debounce-input';
 import Modal from 'react-responsive-modal';
 import {
-    FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaClose
+    FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaClose, FaExclamationTriangle
 } from 'react-icons/lib/fa';
 
 import './MovieList.css';
@@ -43,9 +43,25 @@ class MovieList extends Component {
     componentDidMount() {
         this.updateData();
 
+        this.updateLocation();
+
         // First update, then schedule polling
         this.updateTorrents();
         setInterval(() => this.updateTorrents(), 5000); // Poll torrents every 5 seconds (might be overkill)
+    }
+
+    updateLocation() {
+        // If the server is not patched or something goes wrong, no worries
+        axios.get(this.server + '/ip').then(ip => {
+            axios.get('https://api.ipdata.co/' + ip.data).then(response => {
+                console.log(response);
+                this.setState({ location: response.data.city + ', ' + response.data.country_name });
+            }, error => {
+                console.error(error);
+            });
+        }, error => {
+            console.error(error);
+        });
     }
 
     updateTorrents() {
@@ -201,7 +217,7 @@ class MovieList extends Component {
     }
 
     render() {
-        const { error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order } = this.state;
+        const { error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, location } = this.state;
 
         if (error) {
             return <div className="message">Error: {error.message}</div>;
@@ -230,6 +246,13 @@ class MovieList extends Component {
                         />
                     </Modal>
             
+                    {location === "Seattle, United States" ? (
+                        <span className="warning red">
+                            <FaExclamationTriangle/>
+                            <span>Server not secure</span>
+                        </span>
+                    ) : null}
+
                     <TorrentList
                         torrents={torrents}
                         cancelTorrent={this.cancelTorrent}
