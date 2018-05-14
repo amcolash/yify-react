@@ -10,7 +10,6 @@ export default [
     { value: 'drama', label: 'Drama' },
     { value: 'family', label: 'Family' },
     { value: 'fantasy', label: 'Fantasy' },
-    { value: 'film noir', label: 'Film Noir' },
     { value: 'history', label: 'History	' },
     { value: 'horror', label: 'Horror' },
     { value: 'music', label: 'Music' },
@@ -18,9 +17,7 @@ export default [
     { value: 'mystery', label: 'Mystery' },
     { value: 'romance', label: 'Romance' },
     { value: 'sci-fi', label: 'Sci-Fi' },
-    { value: 'short', label: 'Short' },
     { value: 'sport', label: 'Sport' },
-    { value: 'superhero', label: 'Superhero' },
     { value: 'thriller', label: 'Thriller' },
     { value: 'war', label: 'War' },
     { value: 'western', label: 'Western' }

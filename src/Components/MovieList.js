@@ -184,6 +184,9 @@ class MovieList extends Component {
     }
 
     clearSearch() {
+        const { search, genre, order, page } = this.state;
+        if (search === '' && genre === '' && order === 'date_added' && page === 1) return;
+
         this.setState({ search: '', genre: '', order: 'date_added', page: 1 }, () => this.updateData());
     }
 
@@ -280,7 +283,7 @@ class MovieList extends Component {
                     </div>
 
                     {search.length === 0 ? (
-                        <h2>Recently Uploaded</h2>
+                        <h2>All Movies</h2>
                     ) : null}
 
                     <div className="movie-list">
