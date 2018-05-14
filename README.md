@@ -28,6 +28,7 @@ pm2 save
 ### Docker + VPN
 The below setup will get you going with some prebuilt docker images:
 - [openvpn-client](https://github.com/dperson/openvpn-client)
+- [nginx container](https://github.com/dperson/nginx)
 - [peerflix-server](https://github.com/asapach/peerflix-server)
 
 Note: the copy of the "config" folder is the ovpn + crt config files for openvpn into the vpn instance.
@@ -35,7 +36,8 @@ Note: the copy of the "config" folder is the ovpn + crt config files for openvpn
 docker run -it --cap-add=NET_ADMIN --device /dev/net/tun --name vpn --restart unless-stopped -d dperson/openvpn-client
 docker cp config vpn:/vpn/
 docker restart vpn
-docker run -p 9000:9000 -p 6881:6881 -p 6881:6881/udp --link=vpn --name=peerflix --restart unless-stopped -d -v /tmp/torrent-stream:/tmp/torrent-stream asapach/peerflix-server
+docker run --net=container:vpn --name=peerflix --restart unless-stopped -d -v /tmp/torrent-stream:/tmp/torrent-stream asapach/peerflix-server
+docker run -it --name proxy -p 9000:80 --link vpn:peerflix -d dperson/nginx -w "http://peerflix:9000;/"
 ```
 
 ---
