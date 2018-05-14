@@ -54,3 +54,7 @@ select {
 .pager span {
     padding: 0.25em;
 }
+
+.location {
+    font-size: 0.85em;
+}

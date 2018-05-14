@@ -54,7 +54,6 @@ class MovieList extends Component {
         // If the server is not patched or something goes wrong, no worries
         axios.get(this.server + '/ip').then(ip => {
             axios.get('https://api.ipdata.co/' + ip.data).then(response => {
-                console.log(response);
                 this.setState({ location: response.data.city + ', ' + response.data.country_name });
             }, error => {
                 console.error(error);
@@ -353,6 +352,14 @@ class MovieList extends Component {
                             />
 
                             <Spinner visible={isSearching} />
+
+                            {location ? (
+                                <Fragment>
+                                    <br/>
+                                    <br/>
+                                    <span className="location">Server Location: {location}</span>
+                                </Fragment>
+                            ) : null}
                         </div>
                     ) : null}
                 </Fragment>
