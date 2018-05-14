@@ -7,8 +7,8 @@ import {
 } from 'react-icons/lib/fa';
 
 import './MovieList.css';
-import Genre from '../Genre';
-import Order from '../Order';
+import Genre from '../Data/Genre';
+import Order from '../Data/Order';
 import Movie from './Movie';
 import Spinner from './Spinner';
 import Details from './Details';
