@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import {
-    FaDownload, FaCircle
+    FaDownload, FaCircle, FaPlayCircle
 } from 'react-icons/lib/fa';
 
 import './Details.css';
@@ -25,11 +25,18 @@ s
             if (versions[i].peers > 0) hasPeers = true;
         }
 
-
         return (
             <div className="container">
-                <img src={movie.medium_cover_image} alt={movie.title}/>
-                <div className="data">
+                <div className="left">
+                    <img src={movie.medium_cover_image} alt={movie.title}/>
+                    {movie.yt_trailer_code ? (
+                        <Fragment>
+                            <br/>
+                            <a href={'https://www.youtube.com/watch?v=' + movie.yt_trailer_code} target="_blank"><FaPlayCircle />Trailer</a>
+                        </Fragment>
+                    ) : null}
+                </div>
+                <div className="right">
                     <h3>
                         <span className={hasPeers ? "status green" : "status red"}><FaCircle/></span>
                         {movie.title}

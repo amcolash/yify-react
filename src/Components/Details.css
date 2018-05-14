@@ -2,9 +2,12 @@
     margin-top: 24px;
 }
 
-.data {
-    color: #555;
+.left, .right {
     display: inline-block;
+    color: #555;
+}
+
+.right {
     vertical-align: top;
     max-width: 65%;
     padding-left: 1em;
