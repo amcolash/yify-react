@@ -15,10 +15,12 @@ class Progress extends Component {
                 <span>{name}</span>
                 <progress value={torrent.progress[0] > 1 ? torrent.progress[0] : null } max="100" />
                 <span>{torrent.progress[0].toFixed(0)}% </span>
-                {torrent.stats ? (
+                {torrent.stats && torrent.progress[0] < 100 ? (
                     <span className={speed > 0.25 ? "green" : speed > 0.125 ? "orange" : "red"}>
                         {speed < 0.15 ? (
-                            <FaExclamationCircle/>
+                            <FaExclamationCircle
+                                style={{ paddingRight: "0.25em" }}
+                            />
                         ) : null}
                         [{speed} MB/s]
                     </span>
