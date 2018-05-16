@@ -32,6 +32,7 @@ function serialize(torrent) {
     name: torrent.torrent.name,
     interested: torrent.amInterested,
     ready: torrent.ready,
+    halted: torrent.halted || false,
     stats: stats(torrent),
     files: torrent.files.map(function (f) {
       // jshint -W016
@@ -59,6 +60,28 @@ function findTorrent(req, res, next) {
     return res.send(404);
   }
   next();
+}
+
+function start(req) {
+  var index = parseInt(req.params.index);
+  if (index >= 0 && index < req.torrent.files.length) {
+    req.torrent.files[index].select();
+  } else {
+    req.torrent.files.forEach(function (f) {
+      f.select();
+    });
+  }
+}
+
+function stop(req) {
+  var index = parseInt(req.params.index);
+  if (index >= 0 && index < req.torrent.files.length) {
+    req.torrent.files[index].deselect();
+  } else {
+    req.torrent.files.forEach(function (f) {
+      f.deselect();
+    });
+  }
 }
 
 api.get('/ip', function(req, res) {
@@ -117,26 +140,32 @@ api.get('/torrents/:infoHash', findTorrent, function (req, res) {
 });
 
 api.post('/torrents/:infoHash/start/:index?', findTorrent, function (req, res) {
-  var index = parseInt(req.params.index);
-  if (index >= 0 && index < req.torrent.files.length) {
-    req.torrent.files[index].select();
-  } else {
-    req.torrent.files.forEach(function (f) {
-      f.select();
-    });
-  }
+  start(req);
   res.send(200);
 });
 
 api.post('/torrents/:infoHash/stop/:index?', findTorrent, function (req, res) {
-  var index = parseInt(req.params.index);
-  if (index >= 0 && index < req.torrent.files.length) {
-    req.torrent.files[index].deselect();
-  } else {
-    req.torrent.files.forEach(function (f) {
-      f.deselect();
-    });
-  }
+  stop(req);
+  res.send(200);
+});
+
+api.post('/torrents/:infoHash/halt', findTorrent, function (req, res) {
+  const torrent = req.torrent;
+  const swarm = torrent.swarm;
+
+  stop(req);
+  swarm.pause();
+
+  Object.keys(swarm._peers).forEach(function (addr) {
+    swarm._remove(addr);
+  });
+
+  swarm.wires.forEach(function (wire) {
+    wire.destroy();
+  });
+  
+  torrent.halted = true;
+
   res.send(200);
 });
 

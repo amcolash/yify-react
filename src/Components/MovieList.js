@@ -89,6 +89,18 @@ class MovieList extends Component {
                 return true;
             });
 
+            for (var i = 0; i < torrents.length; i++) {
+                const torrent = torrents[i];
+                if (torrent.progress[0] === 100 && !torrent.halted) {
+                    console.log("stopping complete torrent: " + torrent.infoHash);
+                    axios.post(this.server + '/torrents/' + torrent.infoHash + '/halt').then(response => {
+                        this.updateTorrents();
+                    }, error => {
+                        console.error(error);
+                    });
+                }
+            }
+
             this.setState({
                 torrents: torrents,
                 started: started
@@ -136,6 +148,14 @@ class MovieList extends Component {
 
     cancelTorrent = (infoHash) => {
         axios.delete(this.server + '/torrents/' + infoHash).then(response => {
+            this.updateTorrents();
+        }, error => {
+            console.error(error);
+        });
+    }
+
+    stopTorrent = (infoHash) => {
+        axios.post(this.server + '/torrents/' + infoHash + '/stop').then(response => {
             this.updateTorrents();
         }, error => {
             console.error(error);
