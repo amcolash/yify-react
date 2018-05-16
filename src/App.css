@@ -17,6 +17,15 @@ button {
     margin: 0.5em 0.3em;
 }
 
+button:focus {
+    outline: none;
+}
+
+button:active {
+  outline: 1px solid #eee;
+  transform: scale(1.05);
+}
+
 button:hover {
     cursor: pointer;
 }
