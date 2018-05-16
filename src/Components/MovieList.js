@@ -68,9 +68,12 @@ class MovieList extends Component {
     updateTorrents() {
         axios.get(this.server + '/torrents').then(response => {
             const torrents = response.data;
-            const started = this.state.started.filter(hash => torrents.indexOf(hash) !== -1);
-
-            if (started.length > 0) console.log(started);
+            const started = this.state.started.filter(infoHash => {
+                for (var i = 0; i < torrents.length; i++) {
+                    if (torrents[i].infoHash === infoHash) return false;
+                }
+                return true;
+            });
 
             this.setState({
                 torrents: torrents,
