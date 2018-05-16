@@ -57,7 +57,7 @@ s
                             {getProgress(version.infoHash) ? null : (
                                 <button className="orange download" onClick={() => downloadTorrent(version)}>
                                     {started.indexOf(version.infoHash) !== -1 ? (
-                                        <Spinner visible={true} noMargin={true} button={true} />
+                                        <Spinner visible noMargin button />
                                     ) : (
                                         <FaDownload/>
                                     )}
@@ -70,7 +70,7 @@ s
                                     torrent={getTorrent(version.infoHash)}
                                     openLink={openLink}
                                     cancelTorrent={cancelTorrent}
-                                    fullName={true}
+                                    fullName
                                 />
                             ) : null}
                         </div>

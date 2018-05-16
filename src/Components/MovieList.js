@@ -33,23 +33,37 @@ class MovieList extends Component {
             torrents: [],
             started: [],
             genre: '',
-            order: 'date_added'
+            order: 'date_added',
+            width: 0,
+            height: 0
         }
 
         this.getTorrent = this.getTorrent.bind(this);
         this.getProgress = this.getProgress.bind(this);
+        this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
 
         this.server = "http://" + window.location.hostname + ":9000";
     }
-
+    
     componentDidMount() {
         this.updateData();
-
+        
         this.updateLocation();
-
+        
         // First update, then schedule polling
         this.updateTorrents();
         setInterval(() => this.updateTorrents(), 5000); // Poll torrents every 5 seconds (might be overkill)
+
+        this.updateWindowDimensions();
+        window.addEventListener('resize', this.updateWindowDimensions);
+    }
+    
+    componentWillUnmount() {
+        window.removeEventListener('resize', this.updateWindowDimensions);
+    }
+
+    updateWindowDimensions() {
+        this.setState({ width: window.innerWidth, height: window.innerHeight });
     }
 
     updateLocation() {
@@ -235,7 +249,7 @@ class MovieList extends Component {
 
     render() {
         const {
-            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, location, totalMovies, started
+            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, location, totalMovies, started, width
         } = this.state;
 
         if (error) {
@@ -244,13 +258,13 @@ class MovieList extends Component {
             return (
             <div className="message">
                 <span>Loading...</span>
-                <Spinner visible={true}/>
+                <Spinner visible/>
             </div>
             );
         } else {
             return (
                 <Fragment>
-                    <Modal open={modal} onClose={this.onCloseModal} center>
+                    <Modal open={modal} onClose={this.onCloseModal} center={width > 680}>
                         <Details
                             movie={movie}
                             server={this.server}
@@ -372,7 +386,7 @@ class MovieList extends Component {
 
                             <br/>
                             
-                            <Spinner visible={isSearching} noMargin={true} />
+                            <Spinner visible={isSearching} noMargin />
 
                             {location ? (
                                 <Fragment>

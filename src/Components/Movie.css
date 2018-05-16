@@ -2,7 +2,7 @@
     display: inline-block;
     vertical-align: top;
     text-align: center;
-    max-width: 230px;
+    max-width: 13em;
     margin: 0.6em;
 }
 
@@ -16,11 +16,12 @@
 }
 
 .cover {
-    border: 2px solid white;
-    border-radius: 3px;
-    width: 230px;
-    height: 345px;
+    border: 0.1em solid white;
+    border-radius: 0.2em;
+    width: 13em;
+    height: 19.5em;
     background-repeat: no-repeat;
+    background-size: cover;
     display: flex;
     align-items: flex-end;
     margin-bottom: 0.4em;
@@ -31,9 +32,21 @@
     text-align: right;
     background-color: rgba(30,30,30,0.8);
     padding: 0.25em 0.4em;
-    border-radius: 3px;
+    border-radius: 0.2em;
 }
 
 .quality button {
     margin: 0.3em; 
+}
+
+
+@media (max-width: 680px) {
+    .movie {
+        max-width: 8.66em;
+    }
+
+    .cover {
+        width: 8.66em;
+        height: 13em;
+    }
 }

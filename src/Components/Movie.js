@@ -40,7 +40,7 @@ class Movie extends Component {
                                         downloadTorrent(version);
                                     }}>
                                         {started.indexOf(version.infoHash) !== -1 ? (
-                                            <Spinner visible={true} noMargin={true} button={true} />
+                                            <Spinner visible noMargin button />
                                         ) : (
                                             <FaDownload />
                                         )}
