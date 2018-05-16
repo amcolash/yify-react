@@ -5,6 +5,7 @@ import {
 
 import './Details.css';
 import Progress from './Progress';
+import Spinner from './Spinner';
 
 class Details extends Component {
 
@@ -16,7 +17,7 @@ class Details extends Component {
     }
 s
     render() {
-        const { movie, downloadTorrent, cancelTorrent, openLink, getVersions, getTorrent, getProgress } = this.props;
+        const { movie, downloadTorrent, cancelTorrent, openLink, getVersions, getTorrent, getProgress, started } = this.props;
 
         var versions = getVersions(movie);
 
@@ -54,7 +55,13 @@ s
                         <div className="version" key={version.url}>
                             <b>{version.quality}</b>
                             {getProgress(version.infoHash) ? null : (
-                                <button className="orange download" onClick={() => downloadTorrent(version)}><FaDownload/></button>
+                                <button className="orange download" onClick={() => downloadTorrent(version)}>
+                                    {started.indexOf(version.infoHash) !== -1 ? (
+                                        <Spinner visible={true} noMargin={true} button={true} />
+                                    ) : (
+                                        <FaDownload/>
+                                    )}
+                                </button>
                             )}
                             <span> {version.size}, (Peers: {version.peers}, Seeds: {version.seeds}, Ratio: {version.ratio})</span>
                             <br/>

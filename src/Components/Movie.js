@@ -3,10 +3,11 @@ import {
     FaDownload, FaTrash
 } from 'react-icons/lib/fa';
 import './Movie.css';
+import Spinner from './Spinner';
 
 class Movie extends Component {
     render() {
-        const { click, movie, downloadTorrent, cancelTorrent, getVersions, getProgress } = this.props;
+        const { click, movie, downloadTorrent, cancelTorrent, getVersions, getProgress, started } = this.props;
         const versions = getVersions(movie);
 
         for (var i = 0; i < versions.length; i++) {
@@ -37,7 +38,13 @@ class Movie extends Component {
                                         e.stopPropagation();
                                         e.nativeEvent.stopImmediatePropagation();
                                         downloadTorrent(version);
-                                        }}><FaDownload/></button>
+                                    }}>
+                                        {started.indexOf(version.infoHash) !== -1 ? (
+                                            <Spinner visible={true} noMargin={true} button={true} />
+                                        ) : (
+                                            <FaDownload />
+                                        )}
+                                    </button>
                                 )}
                                 <br/>
                             </Fragment>

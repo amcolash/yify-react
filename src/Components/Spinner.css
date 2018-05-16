@@ -8,9 +8,17 @@
     height: 1em;
     display: inline-block;
     margin-bottom: -0.35em;
-    margin-left: 0.5em;
 
     transition: opacity 0.5s ease-in;
+}
+
+.button {
+    width: 0.65em;
+    height: 0.65em;
+}
+
+.margin {
+    margin-left: 0.5em;
 }
 
 .visible {

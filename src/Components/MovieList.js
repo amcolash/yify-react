@@ -25,11 +25,13 @@ class MovieList extends Component {
             isSearching: false,
             movies: [],
             search: '',
+            totalMovies: 0,
             page: 1,
             totalPages: 1,
             modal: false,
             movie: {},
             torrents: [],
+            started: [],
             genre: '',
             order: 'date_added'
         }
@@ -65,7 +67,15 @@ class MovieList extends Component {
 
     updateTorrents() {
         axios.get(this.server + '/torrents').then(response => {
-            this.setState({ torrents: response.data });
+            const torrents = response.data;
+            const started = this.state.started.filter(hash => torrents.indexOf(hash) !== -1);
+
+            if (started.length > 0) console.log(started);
+
+            this.setState({
+                torrents: torrents,
+                started: started
+            });
         }, error => {
             console.error(error);
         });
@@ -95,7 +105,8 @@ class MovieList extends Component {
                 movies: data.movies,
                 isLoaded: true,
                 isSearching: false,
-                totalPages: totalPages
+                totalPages: totalPages,
+                totalMovies: total
             });
         }, error => {
             this.setState({
@@ -115,6 +126,10 @@ class MovieList extends Component {
     }
 
     downloadTorrent = (version) => {
+        this.setState({
+            started: [ ...this.state.started, version.infoHash ]
+        });
+
         axios.post(this.server + '/torrents', { link: version.url }).then(response => {
             this.updateTorrents();
         }, error => {
@@ -216,7 +231,9 @@ class MovieList extends Component {
     }
 
     render() {
-        const { error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, location } = this.state;
+        const {
+            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, location, totalMovies, started
+        } = this.state;
 
         if (error) {
             return <div className="message">Error: {error.message}</div>;
@@ -235,6 +252,7 @@ class MovieList extends Component {
                             movie={movie}
                             server={this.server}
                             torrents={torrents}
+                            started={started}
                             updateTorrents={this.updateTorrents}
                             cancelTorrent={this.cancelTorrent}
                             downloadTorrent={this.downloadTorrent}
@@ -263,7 +281,6 @@ class MovieList extends Component {
                             <span>Search</span>
                             <DebounceInput
                                 value={search}
-                                minLength={2}
                                 debounceTimeout={500}
                                 onChange={event => this.changeSearch(event.target.value)}
                             />
@@ -304,9 +321,7 @@ class MovieList extends Component {
                         <Spinner visible={isSearching} />
                     </div>
 
-                    {search.length === 0 ? (
-                        <h2>All Movies</h2>
-                    ) : null}
+                    <h2>{totalMovies} Movies</h2>
 
                     <div className="movie-list">
                         {(movies && movies.length > 0) ? (
@@ -318,6 +333,7 @@ class MovieList extends Component {
                                     downloadTorrent={this.downloadTorrent}
                                     cancelTorrent={this.cancelTorrent}
                                     torrents={this.torrents}
+                                    started={started}
                                     getProgress={this.getProgress}
                                     getVersions={this.getVersions}
                                 />
@@ -351,7 +367,9 @@ class MovieList extends Component {
                                 onClick={() => this.changePage(5)}
                             />
 
-                            <Spinner visible={isSearching} />
+                            <br/>
+                            
+                            <Spinner visible={isSearching} noMargin={true} />
 
                             {location ? (
                                 <Fragment>
