@@ -9,6 +9,7 @@ import {
 import './MovieList.css';
 import Genre from '../Data/Genre';
 import Order from '../Data/Order';
+import Quality from '../Data/Quality';
 import Movie from './Movie';
 import Spinner from './Spinner';
 import Details from './Details';
@@ -33,6 +34,7 @@ class MovieList extends Component {
             torrents: [],
             started: [],
             genre: '',
+            quality: 'All',
             order: 'date_added',
             width: 0,
             height: 0
@@ -111,7 +113,7 @@ class MovieList extends Component {
     }
 
     updateData() {
-        const { search, page, genre, order } = this.state;
+        const { search, page, genre, order, quality } = this.state;
 
         this.setState({
             isSearching: true
@@ -122,7 +124,8 @@ class MovieList extends Component {
         const params = 'limit=' + limit + '&page=' + page +
             (search.length > 0 ? '&query_term=' + search : '') +
             '&sort_by=' + order + '&order_by=' + direction +
-            (genre.length > 0 ? '&genre=' + genre : '');
+            (genre.length > 0 ? '&genre=' + genre : '') +
+            '&quality=' + quality;
         const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
 
         axios.get(ENDPOINT).then(response => {
@@ -250,11 +253,15 @@ class MovieList extends Component {
         this.setState({ order: newValue, page: 1 }, () => this.updateData());
     }
 
-    clearSearch() {
-        const { search, genre, order, page } = this.state;
-        if (search === '' && genre === '' && order === 'date_added' && page === 1) return;
+    changeQuality(newValue) {
+        this.setState({ quality: newValue, page: 1 }, () => this.updateData());
+    }
 
-        this.setState({ search: '', genre: '', order: 'date_added', page: 1 }, () => this.updateData());
+    clearSearch() {
+        const { search, genre, order, page, quality } = this.state;
+        if (search === '' && genre === '' && order === 'date_added' && page === 1 && quality === 'All') return;
+
+        this.setState({ search: '', genre: '', order: 'date_added', page: 1, quality: 'All' }, () => this.updateData());
     }
 
     changePage(direction) {
@@ -269,7 +276,7 @@ class MovieList extends Component {
 
     render() {
         const {
-            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, location, totalMovies, started, width
+            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, quality, location, totalMovies, started, width
         } = this.state;
 
         if (error) {
@@ -348,6 +355,21 @@ class MovieList extends Component {
                                         value={order.value}
                                     >
                                         {order.label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <span>Quality</span>
+                            <select
+                                onChange={event => this.changeQuality(event.target.value)}
+                                value={quality}
+                            >
+                                {Quality.map(quality => (
+                                    <option
+                                        key={quality.label}
+                                        value={quality.value}
+                                    >
+                                        {quality.label}
                                     </option>
                                 ))}
                             </select>
