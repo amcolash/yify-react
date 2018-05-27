@@ -7,7 +7,8 @@ class Progress extends Component {
     
     render() {
         const { torrent, openLink, cancelTorrent, fullName } = this.props;
-        const name = (fullName || torrent.name.indexOf(")") === -1) ? torrent.name : torrent.name.substring(0, torrent.name.indexOf(")") + 1);
+        const type = torrent.name.indexOf("720") !== -1 ? "720p" : (torrent.name.indexOf("1080") !== -1 ? "1080p" : (torrent.name.indexOf("3D") !== -1 ? "3D" : null));
+        const name = (fullName || torrent.name.indexOf(")") === -1) ? torrent.name : torrent.name.substring(0, torrent.name.indexOf(")") + 1) + (type ? " [" + type + "]" : "");
         const speed = torrent.stats ? (torrent.stats.speed.down / 1000000).toFixed(2) : null;
         const progress = torrent.progress[0].toFixed(0);
 
