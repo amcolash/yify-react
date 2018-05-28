@@ -15,7 +15,7 @@ class Details extends Component {
         
         return (hours > 0 ? hours + "h " : "") + (minutes > 0 ? minutes + "m" : "");
     }
-s
+
     render() {
         const { movie, downloadTorrent, cancelTorrent, openLink, getVersions, getTorrent, getProgress, started } = this.props;
 

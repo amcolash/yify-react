@@ -93,7 +93,7 @@ class MovieList extends Component {
 
             for (var i = 0; i < torrents.length; i++) {
                 const torrent = torrents[i];
-                if (torrent.progress[0] === 100 && !torrent.halted) {
+                if (torrent.progress && torrent.progress[0] === 100 && !torrent.halted) {
                     console.log("stopping complete torrent: " + torrent.infoHash);
                     axios.post(this.server + '/torrents/' + torrent.infoHash + '/halt').then(response => {
                         this.updateTorrents();
@@ -175,6 +175,8 @@ class MovieList extends Component {
         }, error => {
             console.error(error);
         });
+
+        this.torrentList.expand();
     }
 
     getVersions(movie) {
@@ -318,6 +320,7 @@ class MovieList extends Component {
                         torrents={torrents}
                         cancelTorrent={this.cancelTorrent}
                         openLink={this.openLink}
+                        ref={instance => { this.torrentList = instance; }}
                     />
 
                     <div className="search">

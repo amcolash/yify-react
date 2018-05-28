@@ -1,7 +1,29 @@
 import React, { Component } from 'react';
+import {
+    FaPlus, FaMinus
+} from 'react-icons/lib/fa';
+
 import Progress from './Progress';
 
 class TorrentList extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = { collapsed: true };
+    }
+
+    expand() {
+        this.setState({ collapsed: false });
+    }
+
+    collapse() {
+        this.setState({ collapsed: true });
+    }
+
+    toggleCollapse() {
+        this.setState({ collapsed: !this.state.collapsed });
+    }
+
     render() {
         const { openLink, cancelTorrent, torrents } = this.props;
 
@@ -9,16 +31,26 @@ class TorrentList extends Component {
 
         return (
             <div className="torrentList">
-                <h3>Downloads</h3>
-                {torrents.map(torrent => (
-                    <Progress
-                        key={torrent.infoHash}
-                        torrent={torrent}
-                        openLink={openLink}
-                        cancelTorrent={cancelTorrent}
-                        fullName={false}
-                    />
-                ))}
+                <h3>
+                    <span>Downloads ({torrents.length})</span>
+                    <button onClick={ () => this.toggleCollapse() }>
+                        {this.state.collapsed ? <FaPlus/> : <FaMinus/>}
+                    </button>
+                </h3>
+
+                {!this.state.collapsed ? (
+                    <div>
+                        {(torrents.map(torrent => (
+                            <Progress
+                                key={torrent.infoHash}
+                                torrent={torrent}
+                                openLink={openLink}
+                                cancelTorrent={cancelTorrent}
+                                fullName={false}
+                            />
+                        )))}
+                    </div>
+                ) : null}
                 <hr/>
             </div>
         );
