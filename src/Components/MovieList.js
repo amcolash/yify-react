@@ -325,57 +325,65 @@ class MovieList extends Component {
 
                     <div className="search">
                         <label>
-                            <span>Search</span>
-                            <DebounceInput
-                                value={search}
-                                debounceTimeout={500}
-                                onChange={event => this.changeSearch(event.target.value)}
-                            />
+                            <div className="searchItem">
+                                <span>Search</span>
+                                <DebounceInput
+                                    value={search}
+                                    debounceTimeout={500}
+                                    onChange={event => this.changeSearch(event.target.value)}
+                                />
+                            </div>
 
-                            <span>Genre</span>
-                            <select
-                                onChange={event => this.changeGenre(event.target.value)}
-                                value={genre}
-                            >
-                                {Genre.map(genre => (
-                                    <option
-                                        key={genre.label}
-                                        value={genre.value}
-                                    >
-                                        {genre.label}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="searchItem">
+                                <span>Genre</span>
+                                <select
+                                    onChange={event => this.changeGenre(event.target.value)}
+                                    value={genre}
+                                >
+                                    {Genre.map(genre => (
+                                        <option
+                                            key={genre.label}
+                                            value={genre.value}
+                                        >
+                                            {genre.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                            <span>Order</span>
-                            <select
-                                onChange={event => this.changeOrder(event.target.value)}
-                                value={order}
-                            >
-                                {Order.map(order => (
-                                    <option
-                                        key={order.label}
-                                        value={order.value}
-                                    >
-                                        {order.label}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="searchItem">
+                                <span>Order</span>
+                                <select
+                                    onChange={event => this.changeOrder(event.target.value)}
+                                    value={order}
+                                >
+                                    {Order.map(order => (
+                                        <option
+                                            key={order.label}
+                                            value={order.value}
+                                        >
+                                            {order.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
-                            <span>Quality</span>
-                            <select
-                                onChange={event => this.changeQuality(event.target.value)}
-                                value={quality}
-                            >
-                                {Quality.map(quality => (
-                                    <option
-                                        key={quality.label}
-                                        value={quality.value}
-                                    >
-                                        {quality.label}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className="searchItem">
+                                <span>Quality</span>
+                                <select
+                                    onChange={event => this.changeQuality(event.target.value)}
+                                    value={quality}
+                                >
+                                    {Quality.map(quality => (
+                                        <option
+                                            key={quality.label}
+                                            value={quality.value}
+                                        >
+                                            {quality.label}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
 
                             <button className="red" onClick={() => this.clearSearch() }><FaClose/></button>
                         </label>

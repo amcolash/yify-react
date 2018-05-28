@@ -35,6 +35,16 @@
     margin-left: 0.5em;
 }
 
+.searchItem {
+    padding: 0.2em 0;
+}
+
+@media (min-width: 510px) {
+    .searchItem {
+        display: inline-block;
+    }
+}
+
 select {
     height: 1.5em;
 }
