@@ -2,12 +2,28 @@ import React, { Component, Fragment } from 'react';
 import {
     FaDownload, FaCircle, FaPlayCircle
 } from 'react-icons/lib/fa';
+import axios from 'axios';
 
+import keys from '../keys';
 import './Details.css';
 import Progress from './Progress';
 import Spinner from './Spinner';
 
 class Details extends Component {
+
+    constructor(props) {
+        super(props);
+        this.state = { moreData: null };
+    }
+
+    componentDidMount() {
+        axios.get('http://www.omdbapi.com/?apikey=' + keys.omdb + '&i=' + this.props.movie.imdb_code, { timeout: 10000 }).then(response => {
+            this.setState({ moreData: response.data });
+        }, error => {
+            console.error(error);
+            this.setState({ moreData: "ERROR" });
+        });
+    }
 
     convertTime(min) {
         const hours = Math.floor(min / 60);
@@ -18,6 +34,7 @@ class Details extends Component {
 
     render() {
         const { movie, downloadTorrent, cancelTorrent, openLink, getVersions, getTorrent, getProgress, started } = this.props;
+        const moreData = this.state.moreData;
 
         var versions = getVersions(movie);
 
@@ -47,10 +64,47 @@ class Details extends Component {
                         <div className="mpaa-rating">{movie.mpa_rating ? movie.mpa_rating : "NR"}</div>
                     </h4>
                     <p>{movie.summary}</p>
-                    <span>{JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')}</span>
+                    <span>
+                        {movie.genres.length === 1 ? "Genre": "Genres"}: {JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')}
+                    </span>
+                    <br/>
                     <br/>
                     <a href={"https://www.imdb.com/title/" + movie.imdb_code} target="_blank">IMDB Rating</a><span>: {movie.rating} / 10</span>
+                    
+                    {(moreData !== null && moreData !== "ERROR") ? (
+                        <Fragment>
+                            <br/>
+                            {moreData.Ratings.map(rating => (
+                                <Fragment key={rating.Source}>
+                                    <span>{rating.Source}: {rating.Value}</span>
+                                    <br/>
+                                </Fragment>
+                            ))}
+                            <hr/>
+                            <span>{moreData.Director.indexOf(",") !== -1 ? "Directors" : "Director"}: {moreData.Director}</span>
+                            <br/>
+                            <span>{moreData.Writer.indexOf(",") !== -1 ? "Writers" : "Writer"}: {moreData.Writer}</span>
+                            <br/>
+                            <span>Actors: {moreData.Actors}</span>
+                        </Fragment>
+                    ) : (
+                        <Fragment>
+                            {moreData === "ERROR" ? (
+                                null
+                            ) : (
+                                <Fragment>
+                                    <hr/>
+                                    <span>
+                                        Loading additional data...
+                                        <Spinner visible/>
+                                    </span>
+                                </Fragment>
+                            )}
+                        </Fragment>
+                    )}
+
                     <hr/>
+
                     {versions.map(version => (
                         <div className="version" key={version.url}>
                             <b>{version.quality}</b>

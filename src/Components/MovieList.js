@@ -293,7 +293,7 @@ class MovieList extends Component {
         } else {
             return (
                 <Fragment>
-                    <Modal open={modal} onClose={this.onCloseModal} center={width > 680}>
+                    <Modal open={modal} onClose={this.onCloseModal} center={width > 800}>
                         <Details
                             movie={movie}
                             server={this.server}
