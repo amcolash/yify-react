@@ -76,8 +76,12 @@ class Details extends Component {
                             <br/>
                             {moreData.Ratings.map(rating => (
                                 <Fragment key={rating.Source}>
-                                    <span>{rating.Source}: {rating.Value}</span>
-                                    <br/>
+                                    {rating.Source !== "Internet Movie Database" ? (
+                                        <Fragment>
+                                            <span>{rating.Source}: {rating.Value}</span>
+                                            <br />
+                                        </Fragment>
+                                    ) : null}
                                 </Fragment>
                             ))}
                             <hr/>
