@@ -7,6 +7,7 @@ import {
 } from 'react-icons/lib/fa';
 
 import './MovieList.css';
+import keys from '../keys';
 import Genre from '../Data/Genre';
 import Order from '../Data/Order';
 import Quality from '../Data/Quality';
@@ -71,7 +72,7 @@ class MovieList extends Component {
     updateLocation() {
         // If the server is not patched or something goes wrong, no worries
         axios.get(this.server + '/ip').then(ip => {
-            axios.get('https://api.ipdata.co/' + ip.data).then(response => {
+            axios.get('https://api.ipdata.co/' + ip.data + "?api-key=" + keys.ipdata).then(response => {
                 this.setState({ location: response.data.city + ', ' + response.data.country_name });
             }, error => {
                 console.error(error);

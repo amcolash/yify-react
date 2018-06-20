@@ -36,7 +36,7 @@ Note: the copy of the "config" folder is the ovpn + crt config files for openvpn
 docker run -it --cap-add=NET_ADMIN --device /dev/net/tun --name vpn --restart unless-stopped -d dperson/openvpn-client
 docker cp config vpn:/vpn/
 docker restart vpn
-docker run --net=container:vpn --name=peerflix --restart unless-stopped -d -v /tmp/torrent-stream:/tmp/torrent-stream asapach/peerflix-server
+docker run --net=container:vpn --name=peerflix --restart unless-stopped -d -v /media/abc/torrent-stream:/tmp/torrent-stream asapach/peerflix-server
 docker run -it --name proxy --restart unless-stopped -p 9000:80 --link vpn:peerflix -d dperson/nginx -w "http://peerflix:9000;/"
 ```
 
