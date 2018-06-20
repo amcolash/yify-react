@@ -14,6 +14,13 @@ class Progress extends Component {
         const progress = torrent.progress[0].toFixed(0);
         const link = getLink(torrent.infoHash);
 
+        const data = {
+            title: name,
+            url: link
+        }
+        const playerBase = window.location.href + "player?data=";
+        const playerLink = playerBase + encodeURIComponent(JSON.stringify(data));
+
         return (
             <div className="progress">
                 <span>{name}</span>
@@ -29,7 +36,7 @@ class Progress extends Component {
                         [{speed} MB/s]
                     </span>
                 ) : null}
-                <button className="green" onClick={() => window.open(link)}><FaPlay/></button>
+                <button className="green" onClick={() => window.open(playerLink)}><FaPlay/></button>
                 <CopyToClipboard text={link}
                     // onCopy={() => this.setState({ copied: true })}
                 >
@@ -38,7 +45,7 @@ class Progress extends Component {
                 <button className="red" onClick={() => cancelTorrent(torrent.infoHash)}><FaTrash/></button>
             </div>
         );
-    }    
+    }
 }
 
 export default Progress;
