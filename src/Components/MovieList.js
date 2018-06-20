@@ -212,7 +212,7 @@ class MovieList extends Component {
         return torrent !== null ? torrent.progress[0] + 0.001 : null;
     }
 
-    openLink = (infoHash) => {
+    getLink = (infoHash) => {
         const { torrents } = this.state;
 
         for (var i = 0; i < torrents.length; i++) {
@@ -229,8 +229,7 @@ class MovieList extends Component {
                     }
                 }
 
-                window.open(this.server + torrent.files[largestIndex].link);
-                return;
+                return this.server + torrent.files[largestIndex].link;
             }
         }
     }
@@ -302,7 +301,7 @@ class MovieList extends Component {
                             updateTorrents={this.updateTorrents}
                             cancelTorrent={this.cancelTorrent}
                             downloadTorrent={this.downloadTorrent}
-                            openLink={this.openLink}
+                            getLink={this.getLink}
                             getProgress={this.getProgress}
                             getTorrent={this.getTorrent}
                             getVersions={this.getVersions}
@@ -319,7 +318,7 @@ class MovieList extends Component {
                     <TorrentList
                         torrents={torrents}
                         cancelTorrent={this.cancelTorrent}
-                        openLink={this.openLink}
+                        getLink={this.getLink}
                         ref={instance => { this.torrentList = instance; }}
                     />
 

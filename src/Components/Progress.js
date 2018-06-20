@@ -1,16 +1,18 @@
 import React, { Component } from 'react';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
-    FaTrash, FaPlay, FaExclamationCircle
+    FaTrash, FaPlay, FaCopy, FaExclamationCircle
 } from 'react-icons/lib/fa';
 
 class Progress extends Component {
     
     render() {
-        const { torrent, openLink, cancelTorrent, fullName } = this.props;
+        const { torrent, getLink, cancelTorrent, fullName } = this.props;
         const type = torrent.name.indexOf("720") !== -1 ? "720p" : (torrent.name.indexOf("1080") !== -1 ? "1080p" : (torrent.name.indexOf("3D") !== -1 ? "3D" : null));
         const name = (fullName || torrent.name.indexOf(")") === -1) ? torrent.name : torrent.name.substring(0, torrent.name.indexOf(")") + 1) + (type ? " [" + type + "]" : "");
         const speed = torrent.stats ? (torrent.stats.speed.down / 1000000).toFixed(2) : null;
         const progress = torrent.progress[0].toFixed(0);
+        const link = getLink(torrent.infoHash);
 
         return (
             <div className="progress">
@@ -27,7 +29,12 @@ class Progress extends Component {
                         [{speed} MB/s]
                     </span>
                 ) : null}
-                <button className="green" onClick={() => openLink(torrent.infoHash)}><FaPlay/></button>
+                <button className="green" onClick={() => window.open(link)}><FaPlay/></button>
+                <CopyToClipboard text={link}
+                    // onCopy={() => this.setState({ copied: true })}
+                >
+                    <button className="orange"><FaCopy/></button>
+                </CopyToClipboard>
                 <button className="red" onClick={() => cancelTorrent(torrent.infoHash)}><FaTrash/></button>
             </div>
         );

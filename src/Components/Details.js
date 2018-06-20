@@ -33,7 +33,7 @@ class Details extends Component {
     }
 
     render() {
-        const { movie, downloadTorrent, cancelTorrent, openLink, getVersions, getTorrent, getProgress, started } = this.props;
+        const { movie, downloadTorrent, cancelTorrent, getLink, getVersions, getTorrent, getProgress, started } = this.props;
         const moreData = this.state.moreData;
 
         var versions = getVersions(movie);
@@ -126,7 +126,7 @@ class Details extends Component {
                             {getProgress(version.infoHash) ? (
                                 <Progress
                                     torrent={getTorrent(version.infoHash)}
-                                    openLink={openLink}
+                                    getLink={getLink}
                                     cancelTorrent={cancelTorrent}
                                     fullName
                                 />

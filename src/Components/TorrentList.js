@@ -25,7 +25,7 @@ class TorrentList extends Component {
     }
 
     render() {
-        const { openLink, cancelTorrent, torrents } = this.props;
+        const { getLink, cancelTorrent, torrents } = this.props;
 
         if (torrents.length === 0) return null;
 
@@ -44,7 +44,7 @@ class TorrentList extends Component {
                             <Progress
                                 key={torrent.infoHash}
                                 torrent={torrent}
-                                openLink={openLink}
+                                getLink={getLink}
                                 cancelTorrent={cancelTorrent}
                                 fullName={false}
                             />
