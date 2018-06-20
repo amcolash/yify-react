@@ -209,7 +209,7 @@ class MovieList extends Component {
 
     getProgress(infoHash) {
         const torrent = this.getTorrent(infoHash);
-        return torrent !== null ? torrent.progress[0] + 0.001 : null;
+        return (torrent !== null && torrent.progress && torrent.progress[0]) ? torrent.progress[0] + 0.001 : null;
     }
 
     getLink = (infoHash) => {
