@@ -189,22 +189,27 @@ class MovieList extends Component {
     }
 
     getVersions(movie) {
-        var versions = [];
+        var versions = {};
 
         for (var i = 0; i < movie.torrents.length; i++) {
             const torrent = movie.torrents[i];
-            versions.push({
+
+            let version = {
                 quality: torrent.quality,
                 peers: torrent.peers.toFixed(0),
                 seeds: torrent.seeds.toFixed(0),
-                ratio: torrent.peers > 0 ? (torrent.seeds / torrent.peers).toFixed(3) : 'dead',
+                ratio: torrent.peers > 0 ? (torrent.seeds / torrent.peers).toFixed(3) : 0,
                 url: torrent.url,
                 infoHash: torrent.hash.toLowerCase(),
                 size: torrent.size
-            });
+            };
+
+            if (!versions[version.quality] || versions[version.quality].ratio < version.ratio) {
+                versions[version.quality] = version;
+            }
         }
 
-        return versions;
+        return Object.values(versions);
     }
 
     getTorrent(infoHash) {
