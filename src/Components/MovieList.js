@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
 import axios from 'axios';
-import { DebounceInput } from 'react-debounce-input';
 import Modal from 'react-responsive-modal';
 import {
     FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaClose, FaExclamationTriangle
@@ -8,13 +7,11 @@ import {
 
 import './MovieList.css';
 import keys from '../keys';
-import Genre from '../Data/Genre';
-import Order from '../Data/Order';
-import Quality from '../Data/Quality';
 import Movie from './Movie';
 import Spinner from './Spinner';
 import Details from './Details';
 import TorrentList from './TorrentList';
+import Search from './Search';
 
 class MovieList extends Component {
 
@@ -24,9 +21,7 @@ class MovieList extends Component {
         this.state = {
             error: null,
             isLoaded: false,
-            isSearching: false,
             movies: [],
-            search: '',
             totalMovies: 0,
             page: 1,
             totalPages: 1,
@@ -34,13 +29,16 @@ class MovieList extends Component {
             movie: {},
             torrents: [],
             started: [],
+            search: '',
             genre: '',
             quality: 'All',
             order: 'date_added',
+            isSearching: false,
             width: 0,
             height: 0
         }
 
+        this.updateSearch = this.updateSearch.bind(this);
         this.getTorrent = this.getTorrent.bind(this);
         this.getProgress = this.getProgress.bind(this);
         this.updateWindowDimensions = this.updateWindowDimensions.bind(this);
@@ -113,9 +111,19 @@ class MovieList extends Component {
         });
     }
 
+    updateSearch(search, genre, order, quality) {
+        this.setState({
+            search: search,
+            genre: genre,
+            order: order,
+            quality: quality,
+            page: 1,
+        }, () => this.updateData());
+    }
+    
     updateData() {
         const { search, page, genre, order, quality } = this.state;
-
+        
         this.setState({
             isSearching: true
         });
@@ -243,29 +251,6 @@ class MovieList extends Component {
         this.setState({ modal: false });
     };
 
-    changeSearch(newValue) {
-        this.setState({ search: newValue, page: 1 }, () => this.updateData());
-    }
-
-    changeGenre(newValue) {
-        this.setState({ genre: newValue, page: 1 }, () => this.updateData());
-    }
-
-    changeOrder(newValue) {
-        this.setState({ order: newValue, page: 1 }, () => this.updateData());
-    }
-
-    changeQuality(newValue) {
-        this.setState({ quality: newValue, page: 1 }, () => this.updateData());
-    }
-
-    clearSearch() {
-        const { search, genre, order, page, quality } = this.state;
-        if (search === '' && genre === '' && order === 'date_added' && page === 1 && quality === 'All') return;
-
-        this.setState({ search: '', genre: '', order: 'date_added', page: 1, quality: 'All' }, () => this.updateData());
-    }
-
     changePage(direction) {
         const { page, totalPages } = this.state;
         var newPage = direction + page;
@@ -323,73 +308,15 @@ class MovieList extends Component {
                         ref={instance => { this.torrentList = instance; }}
                     />
 
-                    <div className="search">
-                        <label>
-                            <div className="searchItem">
-                                <span>Search</span>
-                                <DebounceInput
-                                    value={search}
-                                    debounceTimeout={500}
-                                    onChange={event => this.changeSearch(event.target.value)}
-                                />
-                            </div>
-
-                            <div className="searchItem">
-                                <span>Genre</span>
-                                <select
-                                    onChange={event => this.changeGenre(event.target.value)}
-                                    value={genre}
-                                >
-                                    {Genre.map(genre => (
-                                        <option
-                                            key={genre.label}
-                                            value={genre.value}
-                                        >
-                                            {genre.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="searchItem">
-                                <span>Order</span>
-                                <select
-                                    onChange={event => this.changeOrder(event.target.value)}
-                                    value={order}
-                                >
-                                    {Order.map(order => (
-                                        <option
-                                            key={order.label}
-                                            value={order.value}
-                                        >
-                                            {order.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <div className="searchItem">
-                                <span>Quality</span>
-                                <select
-                                    onChange={event => this.changeQuality(event.target.value)}
-                                    value={quality}
-                                >
-                                    {Quality.map(quality => (
-                                        <option
-                                            key={quality.label}
-                                            value={quality.value}
-                                        >
-                                            {quality.label}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <button className="red" onClick={() => this.clearSearch() }><FaClose/></button>
-                        </label>
-
-                        <Spinner visible={isSearching} />
-                    </div>
+                    <Search
+                        updateSearch={this.updateSearch}
+                        isSearching={this.state.isSearching}
+                        search={this.state.search}
+                        genre={this.state.genre}
+                        quality={this.state.quality}
+                        order={this.state.order}
+                        page={this.state.page}
+                    />
 
                     <h2>{totalMovies} Movies</h2>
 

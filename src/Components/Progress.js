@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 import {
-    FaTrash, FaPlay, FaCopy, FaExclamationCircle
+    FaTrash, FaPlay, FaExclamationCircle
 } from 'react-icons/lib/fa';
 
 class Progress extends Component {
@@ -37,11 +36,6 @@ class Progress extends Component {
                     </span>
                 ) : null}
                 <button className="green" onClick={() => window.open(playerLink)}><FaPlay/></button>
-                <CopyToClipboard text={link}
-                    // onCopy={() => this.setState({ copied: true })}
-                >
-                    <button className="orange"><FaCopy/></button>
-                </CopyToClipboard>
                 <button className="red" onClick={() => cancelTorrent(torrent.infoHash)}><FaTrash/></button>
             </div>
         );
