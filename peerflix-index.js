@@ -104,6 +104,13 @@ api.get('/ip', function(req, res) {
   });
 });
 
+api.get('/storage', function(req, res) {
+  require('child_process').exec("df -h /tmp/torrent-stream | grep -v 'Use%' | awk '{ print $5 }'", function (err, output) {
+    // Returned should be "xx%", replace with drives you care about above, should only list 1. Here I have 1 or other
+    res.send({used: output});
+  });
+});
+
 api.get('/torrents', function (req, res) {
   res.send(store.list().map(serialize));
 });

@@ -34,6 +34,7 @@ class MovieList extends Component {
             quality: 'All',
             order: 'date_added',
             isSearching: false,
+            storage: null,
             width: 0,
             height: 0
         }
@@ -106,6 +107,13 @@ class MovieList extends Component {
                 torrents: torrents,
                 started: started
             });
+        }, error => {
+            console.error(error);
+        });
+
+        // Additionally get storage info here
+        axios.get(this.server + '/storage').then(response => {
+            this.setState({storage: response.data.used});
         }, error => {
             console.error(error);
         });
@@ -268,7 +276,8 @@ class MovieList extends Component {
 
     render() {
         const {
-            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, quality, location, totalMovies, started, width
+            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, quality, location,
+            totalMovies, started, width, storage
         } = this.state;
 
         if (error) {
@@ -373,13 +382,23 @@ class MovieList extends Component {
                             
                             <Spinner visible={isSearching} noMargin />
 
-                            {location ? (
-                                <Fragment>
-                                    <br/>
-                                    <br/>
-                                    <span className="location">Server Location: {location}</span>
-                                </Fragment>
-                            ) : null}
+                            <div className="footer">
+                                {location ? (
+                                    <Fragment>
+                                        <br/>
+                                        <br/>
+                                        <span className="location">Server Location: {location}</span>
+                                    </Fragment>
+                                ) : null}
+                                <br/>
+                                <br/>
+                                {storage ? (
+                                    <Fragment>
+                                        <span>Disk Usage: {storage}%</span>
+                                        <progress value={storage} max="100"/>
+                                    </Fragment>
+                                ) : null}
+                            </div>
                         </div>
                     ) : null}
                 </Fragment>
