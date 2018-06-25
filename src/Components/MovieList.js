@@ -199,21 +199,23 @@ class MovieList extends Component {
     getVersions(movie) {
         var versions = {};
 
-        for (var i = 0; i < movie.torrents.length; i++) {
-            const torrent = movie.torrents[i];
+        if (movie.torrents) {
+            for (var i = 0; i < movie.torrents.length; i++) {
+                const torrent = movie.torrents[i];
 
-            let version = {
-                quality: torrent.quality,
-                peers: torrent.peers.toFixed(0),
-                seeds: torrent.seeds.toFixed(0),
-                ratio: torrent.peers > 0 ? (torrent.seeds / torrent.peers).toFixed(3) : 0,
-                url: torrent.url,
-                infoHash: torrent.hash.toLowerCase(),
-                size: torrent.size
-            };
+                let version = {
+                    quality: torrent.quality,
+                    peers: torrent.peers.toFixed(0),
+                    seeds: torrent.seeds.toFixed(0),
+                    ratio: torrent.peers > 0 ? (torrent.seeds / torrent.peers).toFixed(3) : 0,
+                    url: torrent.url,
+                    infoHash: torrent.hash.toLowerCase(),
+                    size: torrent.size
+                };
 
-            if (!versions[version.quality] || versions[version.quality].ratio < version.ratio) {
-                versions[version.quality] = version;
+                if (!versions[version.quality] || versions[version.quality].ratio < version.ratio) {
+                    versions[version.quality] = version;
+                }
             }
         }
 
@@ -337,17 +339,19 @@ class MovieList extends Component {
                     <div className="movie-list">
                         {(movies && movies.length > 0) ? (
                             movies.map(movie => (
-                                <Movie
-                                    key={movie.id}
-                                    movie={movie}
-                                    click={this.onOpenModal}
-                                    downloadTorrent={this.downloadTorrent}
-                                    cancelTorrent={this.cancelTorrent}
-                                    torrents={this.torrents}
-                                    started={started}
-                                    getProgress={this.getProgress}
-                                    getVersions={this.getVersions}
-                                />
+                                movie.torrents ? (
+                                    <Movie
+                                        key={movie.id}
+                                        movie={movie}
+                                        click={this.onOpenModal}
+                                        downloadTorrent={this.downloadTorrent}
+                                        cancelTorrent={this.cancelTorrent}
+                                        torrents={this.torrents}
+                                        started={started}
+                                        getProgress={this.getProgress}
+                                        getVersions={this.getVersions}
+                                    />
+                                ) : null
                             ))
                         ) :
                             <div className="message">No Results</div>
