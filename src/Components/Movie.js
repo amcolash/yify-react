@@ -4,8 +4,20 @@ import {
 } from 'react-icons/lib/fa';
 import './Movie.css';
 import Spinner from './Spinner';
+import ScrollReveal from '../ScrollReveal';
 
 class Movie extends Component {
+    componentDidMount() {
+        const config = {
+            duration: 300,
+            scale: 1.05,
+            distance: '50px',
+            easing: 'ease'
+        }
+
+        ScrollReveal.reveal(this.refs.movieCover, config);
+    }
+
     render() {
         const { click, movie, downloadTorrent, cancelTorrent, getVersions, getProgress, started } = this.props;
         const versions = getVersions(movie);
@@ -15,7 +27,7 @@ class Movie extends Component {
         }
 
         return (
-            <div className="movie">
+            <div className="movie" ref='movieCover'>
                 <div
                     className="cover"
                     style={{ backgroundImage: "url('" + movie.medium_cover_image + "')" }}
