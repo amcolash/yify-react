@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import {
-    FaDownload, FaTrash
+    FaDownload, FaTrash, FaFilm
 } from 'react-icons/lib/fa';
 import './Movie.css';
 import Spinner from './Spinner';
@@ -21,6 +21,9 @@ class Movie extends Component {
                     style={{ backgroundImage: "url('" + movie.medium_cover_image + "')" }}
                     onClick={(e) => click(movie)}
                 >
+                    <div className="movieIcon">
+                        <FaFilm />
+                    </div>
                     <div className="quality">
                         {versions.map(version => (
                             <Fragment

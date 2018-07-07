@@ -65,7 +65,10 @@ class Details extends Component {
                     </h4>
                     <p>{movie.summary}</p>
                     <span>
-                        {movie.genres.length === 1 ? "Genre": "Genres"}: {JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')}
+                        {movie.genres ? (
+                            movie.genres.length === 1 ? "Genre: ": "Genres: " +
+                            JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')
+                        ) : null}
                     </span>
                     <br/>
                     <br/>
