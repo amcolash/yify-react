@@ -13,7 +13,7 @@ class Details extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { moreData: null };
+        this.state = { moreData: null, showCover: true };
     }
 
     componentDidMount() {
@@ -32,9 +32,13 @@ class Details extends Component {
         return (hours > 0 ? hours + "h " : "") + (minutes > 0 ? minutes + "m" : "");
     }
 
+    imageError() {
+        this.setState({ showCover: false });
+    }
+
     render() {
         const { movie, downloadTorrent, cancelTorrent, getLink, getVersions, getTorrent, getProgress, started } = this.props;
-        const moreData = this.state.moreData;
+        const { moreData, showCover } = this.state;
 
         var versions = getVersions(movie);
 
@@ -45,15 +49,15 @@ class Details extends Component {
 
         return (
             <div className="container">
-                <div className="left">
-                    <img src={movie.medium_cover_image} alt={movie.title}/>
-                    {movie.yt_trailer_code ? (
-                        <Fragment>
-                            <br/>
-                            <a href={'https://www.youtube.com/watch?v=' + movie.yt_trailer_code} target="_blank"><FaPlayCircle />Trailer</a>
-                        </Fragment>
-                    ) : null}
-                </div>
+                {showCover ? (
+                    <div className="left">
+                        <img
+                            src={movie.medium_cover_image}
+                            alt={movie.title}
+                            onError={this.imageError.bind(this)}
+                        />
+                    </div>
+                ) : null }
                 <div className="right">
                     <h3>
                         <span className={hasPeers ? "status green" : "status red"}><FaCircle/></span>
@@ -63,15 +67,22 @@ class Details extends Component {
                         {movie.year}, {this.convertTime(movie.runtime)}
                         <div className="mpaa-rating">{movie.mpa_rating ? movie.mpa_rating : "NR"}</div>
                     </h4>
+                    {movie.yt_trailer_code ? (
+                        <a href={'https://www.youtube.com/watch?v=' + movie.yt_trailer_code} target="_blank"><FaPlayCircle />Trailer</a>
+                    ) : null}
                     <p>{movie.summary}</p>
-                    <span>
-                        {movie.genres ? (
-                            movie.genres.length === 1 ? "Genre: ": "Genres: " +
-                            JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')
-                        ) : null}
-                    </span>
-                    <br/>
-                    <br/>
+                    {movie.genres ? (
+                        <Fragment>
+                            <span>
+                                {
+                                    (movie.genres.length === 1 ? "Genre: " : "Genres: ") +
+                                    JSON.stringify(movie.genres).replace(/[[\]"]/g, '').replace(/,/g, ', ')
+                                }
+                            </span>
+                            <br/>
+                            <br/>
+                        </Fragment>
+                    ) : null}
                     <a href={"https://www.imdb.com/title/" + movie.imdb_code} target="_blank">IMDB Rating</a><span>: {movie.rating} / 10</span>
                     
                     {(moreData !== null && moreData !== "ERROR") ? (

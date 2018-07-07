@@ -2,7 +2,7 @@ import React, { Component, Fragment } from 'react';
 import axios from 'axios';
 import Modal from 'react-responsive-modal';
 import {
-    FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaClose, FaExclamationTriangle
+    FaAngleDoubleRight, FaAngleDoubleLeft, FaAngleRight, FaAngleLeft, FaExclamationTriangle
 } from 'react-icons/lib/fa';
 
 import './MovieList.css';
@@ -12,6 +12,8 @@ import Spinner from './Spinner';
 import Details from './Details';
 import TorrentList from './TorrentList';
 import Search from './Search';
+
+const searchCache = [];
 
 class MovieList extends Component {
 
@@ -145,24 +147,32 @@ class MovieList extends Component {
             '&quality=' + quality;
         const ENDPOINT = 'https://yts.am/api/v2/list_movies.json?' + params;
 
-        axios.get(ENDPOINT).then(response => {
-            const data = response.data.data;
-            const total = data.movie_count;
-            const totalPages = Math.ceil(total / limit);
+        if (searchCache[ENDPOINT]) {
+            this.handleData(searchCache[ENDPOINT], limit);
+        } else {
+            axios.get(ENDPOINT).then(response => {
+                searchCache[ENDPOINT] = response.data.data;
+                this.handleData(response.data.data, limit);
+            }, error => {
+                this.setState({
+                    error: error,
+                    isLoaded: true,
+                    isSearching: false,
+                });
+            });
+        }
+    }
 
-            this.setState({
-                movies: data.movies,
-                isLoaded: true,
-                isSearching: false,
-                totalPages: totalPages,
-                totalMovies: total
-            });
-        }, error => {
-            this.setState({
-                error: error,
-                isLoaded: true,
-                isSearching: false,
-            });
+    handleData(data, limit) {
+        const total = data.movie_count;
+        const totalPages = Math.ceil(total / limit);
+
+        this.setState({
+            movies: data.movies,
+            isLoaded: true,
+            isSearching: false,
+            totalPages: totalPages,
+            totalMovies: total
         });
     }
 
@@ -278,7 +288,7 @@ class MovieList extends Component {
 
     render() {
         const {
-            error, isLoaded, movies, modal, movie, page, totalPages, torrents, search, isSearching, genre, order, quality, location,
+            error, isLoaded, movies, modal, movie, page, totalPages, torrents, isSearching, location,
             totalMovies, started, width, storage
         } = this.state;
 
