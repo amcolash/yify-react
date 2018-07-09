@@ -21,23 +21,25 @@ class Progress extends Component {
         const playerLink = playerBase + encodeURIComponent(JSON.stringify(data));
 
         return (
-            <div className="progress">
-                <span>{name}</span>
-                <progress value={progress > 1 ? progress : null } max="100" />
-                <span>{progress}% </span>
-                {torrent.stats && progress < 95 ? (
-                    <span className={speed > 0.25 ? "green" : speed > 0.125 ? "orange" : "red"}>
-                        {speed < 0.15 ? (
-                            <FaExclamationCircle
-                                style={{ paddingRight: "0.25em" }}
-                            />
-                        ) : null}
-                        [{speed} MB/s]
-                    </span>
-                ) : null}
-                <button className="green" onClick={() => window.open(playerLink)}><FaPlay/></button>
-                <button className="red" onClick={() => cancelTorrent(torrent.infoHash)}><FaTrash/></button>
-            </div>
+            (torrent && torrent.name) ? (
+                <div className="progress">
+                    <span>{name}</span>
+                    <progress value={progress > 1 ? progress : null } max="100" />
+                    <span>{progress}% </span>
+                    {torrent.stats && progress < 95 ? (
+                        <span className={speed > 0.25 ? "green" : speed > 0.125 ? "orange" : "red"}>
+                            {speed < 0.15 ? (
+                                <FaExclamationCircle
+                                    style={{ paddingRight: "0.25em" }}
+                                />
+                            ) : null}
+                            [{speed} MB/s]
+                        </span>
+                    ) : null}
+                    <button className="green" onClick={() => window.open(playerLink)}><FaPlay/></button>
+                    <button className="red" onClick={() => cancelTorrent(torrent.infoHash)}><FaTrash/></button>
+                </div>
+            ) : null
         );
     }
 }
