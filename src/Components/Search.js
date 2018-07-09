@@ -3,6 +3,7 @@ import { DebounceInput } from 'react-debounce-input';
 import {
     FaClose
 } from 'react-icons/lib/fa';
+import './Search.css';
 import Spinner from './Spinner';
 
 import Genre from '../Data/Genre';
@@ -21,7 +22,7 @@ class Search extends Component {
 
         return (
             < div className="search" >
-                <label>
+                <div className="form">
                     <div className="searchItem">
                         <span>Search</span>
                         <DebounceInput
@@ -83,7 +84,7 @@ class Search extends Component {
                     </div>
 
                     <button className="red" style={{display: clearVisible ? "inline" : "none"}} onClick={() => this.clearSearch()}><FaClose /></button>
-                </label>
+                </div>
 
                 <Spinner visible={isSearching} />
             </div >
