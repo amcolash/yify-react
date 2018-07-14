@@ -3,11 +3,11 @@ import MovieList from './Components/MovieList';
 import './App.css';
 
 class App extends Component {
-  render() {
-    return (
-      <MovieList/>
-    )
-  }
+    render() {
+        return (
+            <MovieList/>
+        )
+    }
 }
 
 export default App;

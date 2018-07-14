@@ -6,6 +6,10 @@
     margin-top: 0.35em;
 }
 
+.searchItem  {
+    margin-bottom: 0.35em;
+}
+
 .searchItem input, .searchItem select {
     margin: 0 0.6em;
     background-color: white;
