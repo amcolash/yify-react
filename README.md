@@ -38,6 +38,8 @@ docker cp config vpn:/vpn/
 docker restart vpn
 docker run --net=container:vpn --name=peerflix --restart unless-stopped -d -v /media/abc/torrent-stream:/tmp/torrent-stream asapach/peerflix-server
 docker run -it --name proxy --restart unless-stopped -p 9000:80 --link vpn:peerflix -d dperson/nginx -w "http://peerflix:9000;/"
+
+(optional to restart unhealthy containers): docker run -it --name health_check --restart unless-stopped -d willfarrell/autoheal -e AUTOHEAL_CONTAINER_LABEL=all
 ```
 
 ---
