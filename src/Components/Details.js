@@ -85,7 +85,7 @@ class Details extends Component {
                     ) : null}
                     <a href={"https://www.imdb.com/title/" + movie.imdb_code} target="_blank">IMDB Rating</a><span>: {movie.rating} / 10</span>
                     
-                    {(moreData !== null && moreData !== "ERROR") ? (
+                    {moreData !== "ERROR" && moreData !== null && !moreData.Error ? (
                         <Fragment>
                             <br/>
                             {moreData.Ratings.map(rating => (
@@ -107,7 +107,7 @@ class Details extends Component {
                         </Fragment>
                     ) : (
                         <Fragment>
-                            {moreData === "ERROR" ? (
+                            {moreData === "ERROR" || (moreData !== null && moreData.Error) ? (
                                 null
                             ) : (
                                 <Fragment>
