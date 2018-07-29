@@ -10,8 +10,8 @@ echo "--- Copying new build ---"
 scp -r build up:~/yify-react/
 
 # Check if the peerflix server has changed at all
-A=~/.npm-packages/lib/node_modules/peerflix-server/server/index.js
-B=peerflix-index.js
+A=peerflix-index.js
+B=~/.npm-packages/lib/node_modules/peerflix-server/server/index.js
 DIFF=$(diff $A $B)
 if [ "$DIFF" ]; then
     echo "--- Copying peerflix server ---"
