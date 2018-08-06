@@ -10,7 +10,8 @@ var rangeParser = require('range-parser'),
     progress = require('./progressbar'),
     stats = require('./stats'),
     http = require('http'),
-    api = express();
+    api = express(),
+    { exec } = require('child_process');
 
 api.use(express.json());
 api.use(express.logger('dev'));
@@ -105,7 +106,7 @@ api.get('/ip', function(req, res) {
 });
 
 api.get('/storage', function(req, res) {
-    require('child_process').exec("df -h /tmp/torrent-stream | grep -v 'Use%' | awk '{ print $5 }'", function (err, output) {
+    exec("df -h /tmp/torrent-stream | grep -v 'Use%' | awk '{ print $5 }'", function (err, output) {
         // Returned should be "xx%", replace with drive you care about above, clean up output too
         res.send({used: output.replace("%", "").trim()});
     });
@@ -209,7 +210,7 @@ api.post('/torrents/:infoHash/move', findTorrent, function (req, res) {
 
     // Grumble grumble, the docker image used has node 6, so no copyFile...
     // Just going to use native filesystem copy instead
-    require('child_process').exec('cp "' + torrentPath + '" "' + linkPath + '"', function (err, output) {
+    exec('cp "' + torrentPath + '" "' + linkPath + '"', function (err, output) {
         if (err) {
             torrent.halted = false; // hmmm, maybe this will retry things?
             console.error(err)
