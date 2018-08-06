@@ -176,8 +176,9 @@ api.post('/torrents/:infoHash/halt', findTorrent, function (req, res) {
     res.send(200);
 });
 
-api.post('/torrents/:infoHash/symlink', findTorrent, function (req, res) {
+api.post('/torrents/:infoHash/move', findTorrent, function (req, res) {
     const torrent = req.torrent;
+    torrent.halted = true;
 
     let largestSize = 0;
     let largest;
@@ -197,8 +198,7 @@ api.post('/torrents/:infoHash/symlink', findTorrent, function (req, res) {
         // No worries, we don't need to do anything
     }
     
-    // This is the REAL path, not the docker volume path
-    let torrentPath = '/usb/media/torrent-stream/' + torrent.infoHash +'/' + largest.path;
+    let torrentPath = '/tmp/torrent-stream/' + torrent.infoHash +'/' + largest.path;
     let linkPath = basePath + '/' + largest.name;
 
     try {
@@ -207,31 +207,17 @@ api.post('/torrents/:infoHash/symlink', findTorrent, function (req, res) {
         // No worries, we don't need to do anything
     }
 
-    fs.symlinkSync(torrentPath, linkPath);
-
-    res.send(200);
-});
-
-api.post('/torrents/:infoHash/unlink', findTorrent, function (req, res) {
-    let largestSize = 0;
-    let largest;
-
-    req.torrent.files.map(function (f) {
-        if (f.length > largestSize) {
-            largestSize = f.length;
-            largest = f;
+    fs.copyFile(torrentPath, linkPath, function(err) {
+        if (err) {
+            torrent.halted = false; // hmmm, maybe this will retry things?
+            console.error(err)
+            res.send(err);
+        } else {
+            store.remove(req.torrent.infoHash);
+            res.send(200);
         }
     });
 
-    let basePath = '/tmp/peerflix-symlinks';
-    let linkPath = basePath + '/' + largest.name;
-
-    try {
-        fs.unlinkSync(linkPath);
-        res.send(200);
-    } catch (err) {
-        res.send(err);
-    }
 });
 
 api.post('/torrents/:infoHash/pause', findTorrent, function (req, res) {

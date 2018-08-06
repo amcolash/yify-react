@@ -96,13 +96,8 @@ class MovieList extends Component {
             for (var i = 0; i < torrents.length; i++) {
                 const torrent = torrents[i];
                 if (torrent.files && torrent.files.length <= 5 && torrent.progress && torrent.progress[0] > 99.9 && !torrent.halted) {
-                    console.log("stopping complete torrent: " + torrent.infoHash);
-                    axios.post(this.server + '/torrents/' + torrent.infoHash + '/halt').then(response => {
-                        this.updateTorrents();
-                    }, error => {
-                        console.error(error);
-                    });
-                    axios.post(this.server + '/torrents/' + torrent.infoHash + '/symlink');
+                    console.log("moving/removing complete torrent: " + torrent.infoHash);
+                    axios.post(this.server + '/torrents/' + torrent.infoHash + '/move');
                 }
             }
 
@@ -178,16 +173,11 @@ class MovieList extends Component {
     }
 
     cancelTorrent = (infoHash) => {
-        // Unlink the symlink, then delete it
-        axios.post(this.server + '/torrents/' + infoHash + '/unlink').then(response => {
-            axios.delete(this.server + '/torrents/' + infoHash).then(response => {
-                this.updateTorrents();
-            }, error => {
-                console.error(error);
-            });
+        axios.delete(this.server + '/torrents/' + infoHash).then(response => {
+            this.updateTorrents();
         }, error => {
             console.error(error);
-        })
+        });
     }
 
     downloadTorrent = (version) => {
