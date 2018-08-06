@@ -207,7 +207,9 @@ api.post('/torrents/:infoHash/move', findTorrent, function (req, res) {
         // No worries, we don't need to do anything
     }
 
-    fs.copyFile(torrentPath, linkPath, function(err) {
+    // Grumble grumble, the docker image used has node 6, so no copyFile...
+    // Just going to use native filesystem copy instead
+    require('child_process').exec('cp "' + torrentPath + '" "' + linkPath + '"', function (err, output) {
         if (err) {
             torrent.halted = false; // hmmm, maybe this will retry things?
             console.error(err)
