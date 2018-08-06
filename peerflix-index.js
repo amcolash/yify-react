@@ -85,6 +85,65 @@ function stop(req) {
     }
 }
 
+function moveTorrent(torrent, res) {
+    torrent.halted = true;
+
+    let largestSize = 0;
+    let largest;
+
+    torrent.files.map(function (f) {
+        if (f.length > largestSize) {
+            largestSize = f.length;
+            largest = f;
+        }
+    });
+
+    let basePath = '/tmp/peerflix-symlinks';
+
+    try {
+        fs.mkdirSync(basePath);
+    } catch (err) {
+        // No worries, we don't need to do anything
+    }
+
+    let torrentPath = '/tmp/torrent-stream/' + torrent.infoHash + '/' + largest.path;
+    let linkPath = basePath + '/' + largest.name;
+
+    try {
+        fs.unlinkSync(linkPath);
+    } catch (err) {
+        // No worries, we don't need to do anything
+    }
+
+    // Grumble grumble, the docker image used has node 6, so no copyFile...
+    // Just going to use native filesystem copy instead
+    exec('cp "' + torrentPath + '" "' + linkPath + '"', function (err, output) {
+        if (err) {
+            torrent.halted = false; // hmmm, maybe this will retry things?
+            console.error(err)
+
+            if (res) res.send(err);
+        } else {
+            store.remove(torrent.infoHash);
+            
+            if (res) res.send(200);
+        }
+    });
+}
+
+function autoPrune() {
+    const torrents = store.list().map(serialize);
+    for (var i = 0; i < torrents.length; i++) {
+        const torrent = torrents[i];
+        if (torrent.files && torrent.files.length <= 5 && torrent.progress && torrent.progress[0] > 99.9 && !torrent.halted) {
+            moveTorrent(torrent);
+        }
+    }
+}
+
+// Autoprune every hour
+setInterval(autoPrune, 60 * 60 * 1000);
+
 api.get('/ip', function(req, res) {
     http.get('http://ipinfo.io/ip', (resp) => {
         let data = '';
@@ -178,49 +237,7 @@ api.post('/torrents/:infoHash/halt', findTorrent, function (req, res) {
 });
 
 api.post('/torrents/:infoHash/move', findTorrent, function (req, res) {
-    const torrent = req.torrent;
-    torrent.halted = true;
-
-    let largestSize = 0;
-    let largest;
-
-    torrent.files.map(function(f) {
-        if (f.length > largestSize) {
-            largestSize = f.length;
-            largest = f;
-        }
-    });
-
-    let basePath = '/tmp/peerflix-symlinks';
-    
-    try {
-        fs.mkdirSync(basePath);
-    } catch (err) {
-        // No worries, we don't need to do anything
-    }
-    
-    let torrentPath = '/tmp/torrent-stream/' + torrent.infoHash +'/' + largest.path;
-    let linkPath = basePath + '/' + largest.name;
-
-    try {
-        fs.unlinkSync(linkPath);
-    } catch (err) {
-        // No worries, we don't need to do anything
-    }
-
-    // Grumble grumble, the docker image used has node 6, so no copyFile...
-    // Just going to use native filesystem copy instead
-    exec('cp "' + torrentPath + '" "' + linkPath + '"', function (err, output) {
-        if (err) {
-            torrent.halted = false; // hmmm, maybe this will retry things?
-            console.error(err)
-            res.send(err);
-        } else {
-            store.remove(req.torrent.infoHash);
-            res.send(200);
-        }
-    });
-
+    moveTorrent(req.torrent, res);
 });
 
 api.post('/torrents/:infoHash/pause', findTorrent, function (req, res) {
